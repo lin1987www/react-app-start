@@ -1,5 +1,5 @@
-#建立順序
-##安裝 npm
+# 建立順序
+## 安裝 npm
 [npm](https://codeburst.io/how-to-create-and-publish-your-first-node-js-module-444e7585b738)
 
 node_modules包含兩種:
@@ -47,7 +47,7 @@ node_modules包含兩種:
         ]
     }
 
-##安裝 ESLint
+## 安裝 ESLint
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
 
     // --save-dev 跟 -D 都是一樣的option  會修改到 package.json 檔案中
@@ -100,7 +100,7 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
         }
     }
  
-##安裝 Babel
+## 安裝 Babel
 [Babel](https://babeljs.io/docs/en/usage)
 [Try it out](https://babeljs.io/repl/build/master)
 
@@ -147,7 +147,7 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
     npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from
 
 
-##安裝 webpack
+## 安裝 webpack
 [webpack](https://webpack.js.org/guides/installation/)
 
     npm install --save-dev webpack webpack-cli
