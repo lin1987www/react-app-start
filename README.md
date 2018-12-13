@@ -293,7 +293,7 @@ uglifyjs-webpack-plugin 將 js 壓縮最佳化
 
     echo %NODE_ENV%
 
-##安裝 mocha 自動測試 跟 chai 測試語法
+## 安裝 mocha 自動測試 跟 chai 測試語法
 
 [chai](https://www.chaijs.com/)
 [mocha](https://mochajs.org/)
