@@ -2,7 +2,6 @@ body {
     break-inside: avoid;
     break-after: page;
 }
-
 :fullscreen {
     display: flex;
 }

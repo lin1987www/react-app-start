@@ -11,7 +11,7 @@
     "build:css" : "postcss src/**/*.css --base src --dir dist --config postcss.config.js",
     "start": "webpack-dev-server --open --config webpack.dev.js"
   },
-  "author": "lin1987www@gmail.com",
+  "author": "",
   "license": "MIT",
   "files": [
     "src",

@@ -35,7 +35,7 @@ node_modules包含兩種:
 
         npm publish --access=public
 
-產生package.json檔案後，添加files到檔案中，說明那些檔案是需要包裝起來的，有了 files 設定可以省略 .npmignore 跟 .gitignore 檔案
+產生 package.json 後，新增 files 指定那些檔案是需要的，有了 files 就可以省略 .npmignore 跟 .gitignore 等檔案
 
     {   
         "files": [
@@ -77,13 +77,20 @@ node_modules包含兩種:
 
 IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換行方式
         
-        
 [ESLint React](https://www.npmjs.com/package/eslint-plugin-react)
 
     // 安裝用於檢查 react 的語法
     npm install --save-dev eslint-plugin-react
 
-額外建立 .eslintignore 檔案
+修改 .eslintrc.js 新增 plugin:react/recommended 到 extends
+
+    module.exports = {
+        // ...
+        "extends": ["eslint:recommended", "plugin:react/recommended"],
+        // ...
+    };
+
+建立 .eslintignore
 
     # ESLint do test need .eslintignore, it is not limit by package.json files setting.
     # Build
@@ -109,7 +116,7 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 
 @babel/preset-env 和 @babel/polyfill 和 babel-loader 用於整合 webpack 使瀏覽器支援 ES, React, TypeScript 語法
 
-安裝完後手動建立 .babelrc.js
+建立 .babelrc.js
 
     let presets = [
         [
@@ -140,8 +147,8 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 
     module.exports = {presets, plugins};
 
-@babel/preset-react 用於編譯 React 的 .jsx 檔案，
-其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies 。
+@babel/preset-react 用於編譯 React 的 .jsx 檔案
+其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
 
     npm install --save-dev @babel/preset-react
     npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from
@@ -152,7 +159,7 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 
     npm install --save-dev webpack webpack-cli
     
-不使用 webpack-cli 的 init 因為是舊版的，因此手動新增以下三個設定檔檔案
+不使用 webpack-cli 的 init 因為是舊版的，因此手動建立以下三個設定檔檔案
     
 webpack.config.js
 
@@ -266,7 +273,7 @@ package.json 新增指令，webpack-dev-server 開發階段伺服器可自動重
         }
     }
     
-webpack-manifest-plugin 是產生編譯檔案後的對應 .json 文件
+webpack-manifest-plugin 是用於產生編譯檔案後的對應 .json 文件 (已加入)
 
     // webpack.config.js
     var ManifestPlugin = require('webpack-manifest-plugin');
@@ -343,7 +350,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
         }
     };
 
-告知 webpack 將 mocha 套用於所有 test.js 結尾的所有檔案，已包含在之前設定於 webpack.config.js 檔案中
+告知 webpack 將 mocha 套用於所有 test.js 結尾的所有檔案 (已加入)
 
     {
         test: /test\.js$/,
@@ -382,7 +389,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
       "main": "src/index.js",
     }
 
-建立 components/hello-world.jsx
+建立 src/components/hello-world.jsx
 
     import React from 'react';
     import PropTypes from 'prop-types';
@@ -399,7 +406,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     export {HelloWorld as default};
 
-建立 page/index.html
+建立 src/page/index.html
 
     <!DOCTYPE html>
     <html>
@@ -412,7 +419,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
     </body>
     </html>
 
-建立 page/index.html 對應的 page/index.jsx
+建立 src/page/index.html 對應的 src/page/index.jsx
 
     import React from 'react';
     import ReactDOM from 'react-dom';
@@ -423,7 +430,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
         document.getElementById('root')
     );
 
-告知 webpack 如何載入 jsx ，已包含在之前設定於 webpack.config.js 檔案中
+告知 webpack 如何載入 jsx (已加入)
 
     // webpack.config.js
     {
@@ -451,7 +458,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
         ]
     },
 
-告知 webpack ，新增 index.html 頁面
+告知 webpack ，新增 index.html 頁面，其對應關係透過 HtmlWebpackPlugin 關聯起來
 
     // webpack.config.js
     module.exports = {
@@ -537,17 +544,20 @@ stylelint-webpack-plugin allows defining a glob pattern matching the configurati
     module.exports = {
       // ...
       plugins: [
-        new StyleLintPlugin(options),
+        new StyleLintPlugin({}),
       ],
       // ...
     }
 
-建立 page/index.css
+建立 src/page/index.css
 
     /* src/page/index.css */
     body {
         break-inside: avoid;
         break-after: page;
+    }
+    :fullscreen {
+        display: flex;
     }
 
 修改 index.jsx 加入 import index.css
@@ -562,19 +572,6 @@ stylelint-webpack-plugin allows defining a glob pattern matching the configurati
         <HelloWorld name="world!" /> ,
         document.getElementById('root')
     );
-
-建立 postcss.config.js 設定檔
-
-    // postcss.config.js
-    module.exports = {
-        parser: require('postcss-safe-parser'),
-        plugins: [
-            require('precss'),
-            require('autoprefixer')
-        ]
-    };
-
-
 
 ## 設定瀏覽器支援 Browserlist
 
