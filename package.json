@@ -8,7 +8,7 @@
     "test:lint": "eslint . --ext .js,.jsx",
     "test:mocha": "mocha --require @babel/register ./test/index.js",
     "build": "webpack --progress --config webpack.prod.js",
-    "build:css" : "postcss src/**/*.css --base src --dir dist --config postcss.config.js",
+    "build:css": "postcss src/**/*.css --base src --dir dist --config postcss.config.js",
     "start": "webpack-dev-server --open --config webpack.dev.js"
   },
   "author": "",
@@ -45,6 +45,7 @@
     "clean-webpack-plugin": "^1.0.0",
     "css-loader": "^2.0.0",
     "eslint": "^5.10.0",
+    "eslint-loader": "^2.1.1",
     "eslint-plugin-react": "^7.11.1",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",

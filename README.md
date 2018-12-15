@@ -157,8 +157,10 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 ## 安裝 webpack
 [webpack](https://webpack.js.org/guides/installation/)
 
-    npm install --save-dev webpack webpack-cli
-    
+    npm install --save-dev webpack webpack-cli eslint-loader
+
+eslint-loader 用於 eslint 跟 webpack 做整合
+
 不使用 webpack-cli 的 init 因為是舊版的，因此手動建立以下三個設定檔檔案
     
 webpack.config.js
@@ -202,6 +204,12 @@ webpack.config.js
         ],
         module: {
             rules: [
+                {
+                    enforce: 'pre',
+                    test: /\.jsx?$/,
+                    exclude: /node_modules/,
+                    loader: 'eslint-loader',
+                },
                 {
                     test: /\.jsx?$/,
                     include: [path.resolve(__dirname, 'src')],
