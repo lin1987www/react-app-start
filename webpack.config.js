@@ -1,50 +1,46 @@
+const defaultsDeep = require('lodash.defaultsdeep');
 const webpack = require('webpack');
 const path = require('path');
+
 const ManifestPlugin = require('webpack-manifest-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 
+const babelrc = require('./.babelrc');
+const babel_presets = babelrc.presets;
+const babel_plugins = babelrc.plugins;
 
-module.exports = {
+const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devtool: 'inline-source-map',
+    devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
     devServer: {
         contentBase: './dist',
         hot: true
     },
-    entry: {
-        'app': ['@babel/polyfill', './src/page/index.jsx'],
-        'test': ['@babel/polyfill', './test/index.js'],
+    resolve: {
+        symlinks: false
     },
     output: {
-        // filename: 'main.js',
+        libraryTarget: 'umd',
         filename: '[name].[hash].bundle.js',
-        chunkFilename: '[name].[chunkhash].bundle.js',
+        chunkFilename: '[name].[chunkhash].js',
         path: path.resolve(__dirname, 'dist'),
     },
-    plugins: [
-        new ManifestPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        // 避免import順序改變造成 hash 改變
-        new webpack.HashedModuleIdsPlugin(),
-        // 清除指定資料夾底下的資料
-        new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({
-            inject: true,
-            title: 'Test Page',
-            chunks: ['runtime', 'test'],
-            filename: 'test.html',
-        }),
-        new HtmlWebpackPlugin({
-            inject: true,
-            chunks: ['runtime', 'app'],
-            template: './src/page/index.html',
-            filename: './index.html',
-        }),
-        new StyleLintPlugin({}),
-    ],
+    optimization: {
+        minimizer: [new TerserPlugin()],
+        runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
+        splitChunks: {
+            cacheGroups: {
+                vendors: {
+                    priority: -10,
+                    test: /[\\/]node_modules[\\/]/
+                }
+            },
+        }
+    },
     module: {
         rules: [
             {
@@ -58,25 +54,21 @@ module.exports = {
                 include: [path.resolve(__dirname, 'src')],
                 loader: 'babel-loader',
                 options: {
-                    // Explicitly disable babelrc so we don't catch various config in much lower dependencies.
-                    babelrc: true,
+                    presets: babel_presets,
+                    plugins: babel_plugins,
                 },
             },
             {
                 test: /test\.js$/,
                 exclude: /node_modules/,
-                use: 'mocha-loader',
+                use: ['mocha-loader'],
             },
             {
                 test: /\.html$/,
-                use: [
-                    {
-                        loader: 'html-loader',
-                        options: {
-                            minimize: false
-                        }
-                    }
-                ]
+                loader: 'html-loader',
+                options: {
+                    minimize: false
+                }
             },
             {
                 test: /\.css$/,
@@ -88,7 +80,10 @@ module.exports = {
                     {
                         loader: 'css-loader',
                         options: {
+                            modules: true,
                             importLoaders: 1,
+                            localIdentName: '[name]_[local]_[hash:base64:5]',
+                            camelCase: true,
                         }
                     },
                     {
@@ -98,18 +93,44 @@ module.exports = {
             },
         ]
     },
-    optimization: {
-        minimizer: [
-            new UglifyJsPlugin()
-        ],
-        runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
-        splitChunks: {
-            cacheGroups: {
-                vendors: {
-                    priority: -10,
-                    test: /[\\/]node_modules[\\/]/
-                }
-            },
-        }
+    entry: {
+        'app': ['@babel/polyfill', './src/page/index.jsx'],
+        'test': ['@babel/polyfill', './test/index.js'],
     },
+    plugins: [
+        new StyleLintPlugin(),
+        new ManifestPlugin(),
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({
+            inject: true,
+            title: 'Test Page',
+            chunks: ['runtime', 'test'],
+            filename: 'test.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            chunks: ['runtime', 'app'],
+            template: './src/page/index.html',
+            filename: './index.html',
+        }),
+    ],
 };
+
+const prod = {
+    plugins: base.plugins.concat([
+        // 避免import順序改變造成 hash 改變
+        new webpack.HashedModuleIdsPlugin(),
+    ])
+};
+
+const dev = {
+    plugins: base.plugins.concat([
+        new webpack.HotModuleReplacementPlugin(),
+    ])
+};
+
+module.exports = [
+    defaultsDeep({}, base,
+        process.env.NODE_ENV === 'production' ? prod : dev
+    )
+];

@@ -1,3 +1,4 @@
+// for @babel/register, same setting with babel-loader
 let presets = [
     [
         '@babel/preset-env',
@@ -17,12 +18,7 @@ let plugins = [
     '@babel/plugin-proposal-json-strings',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-export-namespace-from',
+    '@babel/plugin-transform-async-to-generator',
 ];
-
-if (process.env['ENV'] === 'prod') {
-
-} else {
-
-}
 
 module.exports = {presets, plugins};
