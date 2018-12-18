@@ -58,134 +58,143 @@ cross-env 用於跨平台設定環境變數
 建立 webpack.config.js
 
     // webpack.config.js
-     const defaultsDeep = require('lodash.defaultsdeep');
-     const webpack = require('webpack');
-     const path = require('path');
+    const defaultsDeep = require('lodash.defaultsdeep');
+    const webpack = require('webpack');
+    const path = require('path');
 
-     const ManifestPlugin = require('webpack-manifest-plugin');
-     const CleanWebpackPlugin = require('clean-webpack-plugin');
-     const HtmlWebpackPlugin = require('html-webpack-plugin');
-     const TerserPlugin = require('terser-webpack-plugin');
+    const ManifestPlugin = require('webpack-manifest-plugin');
+    const CleanWebpackPlugin = require('clean-webpack-plugin');
+    const HtmlWebpackPlugin = require('html-webpack-plugin');
+    const TerserPlugin = require('terser-webpack-plugin');
 
-     const StyleLintPlugin = require('stylelint-webpack-plugin');
+    const StyleLintPlugin = require('stylelint-webpack-plugin');
 
-     const base = {
-         mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-         devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
-         devServer: {
-             contentBase: './dist',
-             hot: true
-         },
-         resolve: {
-             symlinks: false
-         },
-         output: {
-             libraryTarget: 'umd',
-             filename: '[name].[hash].bundle.js',
-             chunkFilename: '[name].[chunkhash].js',
-             path: path.resolve(__dirname, 'dist'),
-         },
-         optimization: {
-             minimizer: [new TerserPlugin()],
-             runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
-             splitChunks: {
-                 cacheGroups: {
-                     vendors: {
-                         priority: -10,
-                         test: /[\\/]node_modules[\\/]/
-                     }
-                 },
-             }
-         },
-         module: {
-             rules: [
-                 {
-                     enforce: 'pre',
-                     test: /\.jsx?$/,
-                     exclude: /node_modules/,
-                     loader: 'eslint-loader',
-                 },
-                 {
-                     test: /\.jsx?$/,
-                     include: [path.resolve(__dirname, 'src')],
-                     loader: 'babel-loader',
-                 },
-                 {
-                     test: /test\.js$/,
-                     exclude: /node_modules/,
-                     use: ['mocha-loader'],
-                 },
-                 {
-                     test: /\.html$/,
-                     loader: 'html-loader',
-                     options: {
-                         minimize: false
-                     }
-                 },
-                 {
-                     test: /\.css$/,
-                     exclude: /node_modules/,
-                     use: [
-                         {
-                             loader: 'style-loader',
-                         },
-                         {
-                             loader: 'css-loader',
-                             options: {
-                                 modules: true,
-                                 importLoaders: 1,
-                                 localIdentName: '[name]_[local]_[hash:base64:5]',
-                                 camelCase: true,
-                             }
-                         },
-                         {
-                             loader: 'postcss-loader'
-                         }
-                     ]
-                 },
-             ]
-         },
-         entry: {
-             'app': ['@babel/polyfill', './src/page/index.jsx'],
-             'test': ['@babel/polyfill', './test/index.js'],
-         },
-         plugins: [
-             new StyleLintPlugin(),
-             new ManifestPlugin(),
-             new CleanWebpackPlugin(['dist']),
-             new HtmlWebpackPlugin({
-                 inject: true,
-                 title: 'Test Page',
-                 chunks: ['runtime', 'test'],
-                 filename: 'test.html',
-             }),
-             new HtmlWebpackPlugin({
-                 inject: true,
-                 chunks: ['runtime', 'app'],
-                 template: './src/page/index.html',
-                 filename: './index.html',
-             }),
-         ],
-     };
+    const babelrc = require('./.babelrc');
+    const babel_presets = babelrc.presets;
+    const babel_plugins = babelrc.plugins;
 
-     const prod = {
-         plugins: base.plugins.concat([
-             // 避免import順序改變造成 hash 改變
-             new webpack.HashedModuleIdsPlugin(),
-         ])
-     };
+    const base = {
+        mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+        devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
+        devServer: {
+            contentBase: './dist',
+            hot: true
+        },
+        resolve: {
+            symlinks: false
+        },
+        output: {
+            libraryTarget: 'umd',
+            filename: '[name].[hash].bundle.js',
+            chunkFilename: '[name].[chunkhash].js',
+            path: path.resolve(__dirname, 'dist'),
+        },
+        optimization: {
+            minimizer: [new TerserPlugin()],
+            runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
+            splitChunks: {
+                cacheGroups: {
+                    vendors: {
+                        priority: -10,
+                        test: /[\\/]node_modules[\\/]/
+                    }
+                },
+            }
+        },
+        module: {
+            rules: [
+                {
+                    enforce: 'pre',
+                    test: /\.jsx?$/,
+                    exclude: /node_modules/,
+                    loader: 'eslint-loader',
+                },
+                {
+                    test: /\.jsx?$/,
+                    include: [path.resolve(__dirname, 'src')],
+                    loader: 'babel-loader',
+                    options: {
+                        // To avoid node_modules building failed at jsx
+                        presets: babel_presets,
+                        plugins: babel_plugins,
+                    },
+                },
+                {
+                    test: /test\.js$/,
+                    exclude: /node_modules/,
+                    use: ['mocha-loader'],
+                },
+                {
+                    test: /\.html$/,
+                    loader: 'html-loader',
+                    options: {
+                        minimize: false
+                    }
+                },
+                {
+                    test: /\.css$/,
+                    exclude: /node_modules/,
+                    use: [
+                        {
+                            loader: 'style-loader',
+                        },
+                        {
+                            loader: 'css-loader',
+                            options: {
+                                modules: true,
+                                importLoaders: 1,
+                                localIdentName: '[name]_[local]_[hash:base64:5]',
+                                camelCase: true,
+                            }
+                        },
+                        {
+                            loader: 'postcss-loader'
+                        }
+                    ]
+                },
+            ]
+        },
+        entry: {
+            'app': ['@babel/polyfill', './src/page/index.jsx'],
+            'test': ['@babel/polyfill', './test/index.js'],
+        },
+        plugins: [
+            new StyleLintPlugin(),
+            new ManifestPlugin(),
+            new CleanWebpackPlugin(['dist']),
+            new HtmlWebpackPlugin({
+                inject: true,
+                title: 'Test Page',
+                chunks: ['runtime', 'test'],
+                filename: 'test.html',
+            }),
+            new HtmlWebpackPlugin({
+                inject: true,
+                chunks: ['runtime', 'app'],
+                template: './src/page/index.html',
+                filename: './index.html',
+            }),
+        ],
+    };
 
-     const dev = {
-         plugins: base.plugins.concat([
-             new webpack.HotModuleReplacementPlugin(),
-         ])
-     };
+    const prod = {
+        plugins: base.plugins.concat([
+            // 避免import順序改變造成 hash 改變
+            new webpack.HashedModuleIdsPlugin(),
+        ])
+    };
 
-     module.exports = [
-         defaultsDeep({}, base,
-             process.env.NODE_ENV === 'production' ? prod : dev
-         )
-     ];
+    const dev = {
+        plugins: base.plugins.concat([
+            new webpack.HotModuleReplacementPlugin(),
+        ])
+    };
+
+    module.exports = [
+        defaultsDeep({}, base,
+            process.env.NODE_ENV === 'production' ? prod : dev
+        )
+    ];
 
 然後接下來依序安裝缺少的module
 
@@ -721,10 +730,38 @@ babel 跟 babel-loader 設定上並不是完全通用，webpack只是透過 babe
 
 ### [Doesn't compile a npm linked module](https://github.com/babel/babel-loader/issues/149#issuecomment-320581223)
 
-    resolve: {
-        symlinks: false
-    },
+    // webpack.config.js
+    module.exports = {
+        // ...
+        resolve: {
+            symlinks: false
+        },
+    }
+
+另外 babel-loader 的 option 必須明確指定 presets 和 plugins
+
+    // webpack.config.js
+    module.exports = {
+        // ...
+        module: {
+            rules: [
+                {
+                    test: /\.jsx?$/,
+                    include: [path.resolve(__dirname, 'src')],
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ...
+                        plugins: ...
+                    },
+                },
+            ]
+        }
+    }
 
 ### [uglifyjs-webpack-plugin ES6 support broken](https://github.com/webpack-contrib/uglifyjs-webpack-plugin/issues/362#issuecomment-425849160)
 
 Use https://github.com/webpack-contrib/terser-webpack-plugin for ES6 (webpack@5 will be use this plugin for uglification)
+
+
+// TODO
+測試 CSS var 跟 import

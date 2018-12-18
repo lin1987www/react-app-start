@@ -9,6 +9,10 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 
+const babelrc = require('./.babelrc');
+const babel_presets = babelrc.presets;
+const babel_plugins = babelrc.plugins;
+
 const base = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
     devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
@@ -49,6 +53,11 @@ const base = {
                 test: /\.jsx?$/,
                 include: [path.resolve(__dirname, 'src')],
                 loader: 'babel-loader',
+                options: {
+                    // To avoid node_modules building failed at jsx
+                    presets: babel_presets,
+                    plugins: babel_plugins,
+                },
             },
             {
                 test: /test\.js$/,
