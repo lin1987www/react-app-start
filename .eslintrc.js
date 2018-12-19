@@ -30,5 +30,15 @@ module.exports = {
             'error',
             'always'
         ]
+    },
+    'settings': {
+        'react': {
+            'createClass': 'createReactClass',
+            'pragma': 'React',
+            'version': '16.6.3',
+        },
+        'propWrapperFunctions': [
+            'forbidExtraProps',
+        ]
     }
 };

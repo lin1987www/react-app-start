@@ -1,0 +1,4 @@
+$red-color: #880000;
+* {
+    color: $red-color;
+}

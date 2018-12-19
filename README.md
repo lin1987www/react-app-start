@@ -298,7 +298,16 @@ eslint-plugin-react 用於檢查 react 的語法，修改 .eslintrc.js 新增 pl
     module.exports = {
         // ...
         "extends": ["eslint:recommended", "plugin:react/recommended"],
-        // ...
+        'settings': {
+            'react': {
+                'createClass': 'createReactClass',
+                'pragma': 'React',
+                'version': '16.6.3',
+            },
+            'propWrapperFunctions': [
+                'forbidExtraProps',
+            ]
+        }
     };
 
 建立 .eslintignore
@@ -595,7 +604,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 [PostCss](https://github.com/postcss/postcss)
 
     npm install --save postcss-import
-    npm install --save-dev style-loader css-loader postcss-loader postcss-cli postcss-safe-parser stylelint stylelint-webpack-plugin autoprefixer precss
+    npm install --save-dev style-loader css-loader postcss-loader postcss-cli postcss-safe-parser stylelint stylelint-webpack-plugin stylelint-config-recommended autoprefixer precss
 
 postcss-import To resolve path of an @import rule
 
@@ -604,6 +613,9 @@ precss contains plugins for Sass-like features, like variables, nesting, and mix
 autoprefixer adds vendor prefixes, using data from Can I Use.
 
 stylelint-webpack-plugin allows defining a glob pattern matching the configuration and use of stylelint.
+stylelint-webpack-plugin 目前似乎尚未完善
+
+stylelint-config-recommended 用於 stylielint 設定檔
 
 建立 postcss.config.js
 
@@ -622,6 +634,7 @@ stylelint-webpack-plugin allows defining a glob pattern matching the configurati
     // package.json
     {
         "scripts": {
+            "test:css": "stylelint src/**/*.css",
             "build:css" : "postcss src/**/*.css --base src --dir dist --config postcss.config.js",
         }
     }
@@ -672,12 +685,22 @@ stylelint-webpack-plugin allows defining a glob pattern matching the configurati
 建立 src/page/index.css
 
     /* src/page/index.css */
+    @import "red.css";
+
     body {
         break-inside: avoid;
         break-after: page;
     }
     :fullscreen {
         display: flex;
+    }
+
+建立 src/page/red.css
+
+    /* src/page/red.css */
+    $red-color: #880000;
+    * {
+        color: $red-color;
     }
 
 修改 index.jsx 加入 import index.css
@@ -761,7 +784,3 @@ babel 跟 babel-loader 設定上並不是完全通用，webpack只是透過 babe
 ### [uglifyjs-webpack-plugin ES6 support broken](https://github.com/webpack-contrib/uglifyjs-webpack-plugin/issues/362#issuecomment-425849160)
 
 Use https://github.com/webpack-contrib/terser-webpack-plugin for ES6 (webpack@5 will be use this plugin for uglification)
-
-
-// TODO
-測試 CSS var 跟 import
