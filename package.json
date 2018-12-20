@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "test": "npm run test:lint && npm run test:mocha",
+    "test": "npm run test:lint && npm run test:mocha && npm run test:css",
     "test:lint": "eslint . --ext .js,.jsx",
     "test:mocha": "mocha --require @babel/register ./test/index.js",
     "test:css": "stylelint src/**/*.css",

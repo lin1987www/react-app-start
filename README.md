@@ -709,9 +709,9 @@ stylelint-config-recommended 用於 stylielint 設定檔
         display: flex;
     }
 
-建立 src/page/red.css
+建立 src/page/red.scss
 
-    /* src/page/red.css */
+    /* src/page/red.scss */
     $red-color: #880000;
     * {
         color: $red-color;
@@ -798,3 +798,9 @@ babel 跟 babel-loader 設定上並不是完全通用，webpack只是透過 babe
 ### [uglifyjs-webpack-plugin ES6 support broken](https://github.com/webpack-contrib/uglifyjs-webpack-plugin/issues/362#issuecomment-425849160)
 
 Use https://github.com/webpack-contrib/terser-webpack-plugin for ES6 (webpack@5 will be use this plugin for uglification)
+
+### CSS
+
+[Selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
+[@media](https://developer.mozilla.org/en-US/docs/Web/CSS/@media)
+

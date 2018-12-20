@@ -1,4 +1,4 @@
-@import "red.css";
+@import "red.scss";
 
 body {
     break-inside: avoid;
