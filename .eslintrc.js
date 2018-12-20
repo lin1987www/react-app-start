@@ -1,4 +1,5 @@
 module.exports = {
+    'parser': 'babel-eslint',
     'env': {
         'browser': true,
         'commonjs': true,
@@ -12,6 +13,16 @@ module.exports = {
         },
         'ecmaVersion': 2018,
         'sourceType': 'module'
+    },
+    'settings': {
+        'react': {
+            'createClass': 'createReactClass',
+            'pragma': 'React',
+            'version': '16.6.3',
+        },
+        'propWrapperFunctions': [
+            'forbidExtraProps',
+        ]
     },
     'rules': {
         'indent': [
@@ -31,14 +42,4 @@ module.exports = {
             'always'
         ]
     },
-    'settings': {
-        'react': {
-            'createClass': 'createReactClass',
-            'pragma': 'React',
-            'version': '16.6.3',
-        },
-        'propWrapperFunctions': [
-            'forbidExtraProps',
-        ]
-    }
 };

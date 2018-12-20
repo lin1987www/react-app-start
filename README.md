@@ -37,6 +37,7 @@ node_modules包含兩種:
 
 產生 package.json 後，新增 files 指定那些檔案是需要的，有了 files 就可以省略 .npmignore 跟 .gitignore 等檔案
 
+    // package.json
     {   
         "files": [
             "src",
@@ -230,8 +231,6 @@ clean-webpack-plugin 編譯前清除特定檔案
 
 terser-webpack-plugin 產生最佳化壓縮後 js
 
-eslint-loader 用於 eslint 跟 webpack 做整合
-
 設定環境變數 NODE_ENV
 
     set NODE_ENV=production
@@ -244,7 +243,7 @@ eslint-loader 用於 eslint 跟 webpack 做整合
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
 
     // --save-dev 跟 -D 都是一樣的option  會修改到 package.json 檔案中
-    npm install --save-dev eslint eslint-loader eslint-plugin-react
+    npm install --save-dev eslint eslint-loader eslint-plugin-react babel-eslint
         
 /node_modules/.bin包含了所有可以執行的package指令        
         
@@ -294,10 +293,15 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
 
 eslint-plugin-react 用於檢查 react 的語法，修改 .eslintrc.js 新增 plugin:react/recommended 到 extends
 
+babel-eslint 用於去除一些 react 語法解析上的問題
+
+`移除 plugins 中的 "react"`，因為我們已經使用 extends 的 plugin:react/recommended 取代
+
     // .eslintrc.js
     module.exports = {
         // ...
-        "extends": ["eslint:recommended", "plugin:react/recommended"],
+        'parser': 'babel-eslint',
+        'extends': ['eslint:recommended', 'plugin:react/recommended'],
         'settings': {
             'react': {
                 'createClass': 'createReactClass',
@@ -465,6 +469,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 @babel/register 會尋找 Babel 的設定檔，因此必須建立 .babelrc.js，這裡的設定跟 webpack.config.js 裡面的 babel-loader 的 option 設定一致。
 而為了統一 babel 的設定檔，因此 webpack.config.js 會從 babelrc.js 載入有效設定到 babel-loader 當中。
 
+    // .babelrc.js
     // for @babel/register, babel-loader
     let presets = [
         [
@@ -627,6 +632,15 @@ stylelint-config-recommended 用於 stylielint 設定檔
             require('precss'),
             require('autoprefixer')
         ]
+    };
+
+建立 stylelint.config.js
+
+    // stylelint.config.js
+    module.exports = {
+        'extends': 'stylelint-config-recommended',
+        'plugins': [],
+        'rules': {}
     };
 
 新增指令到 package.json
