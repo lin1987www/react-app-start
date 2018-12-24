@@ -1,4 +1,4 @@
-const defaultsDeep = require('lodash.defaultsdeep');
+const merge = require('webpack-merge');
 const webpack = require('webpack');
 const path = require('path');
 
@@ -13,9 +13,11 @@ const babelrc = require('./.babelrc');
 const babel_presets = babelrc.presets;
 const babel_plugins = babelrc.plugins;
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const base = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-    devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
+    mode: isProd ? 'production' : 'development',
+    devtool: isProd ? 'cheap-module-source-map' : 'inline-source-map',
     devServer: {
         contentBase: './dist',
         hot: true
@@ -118,20 +120,20 @@ const base = {
 };
 
 const prod = {
-    plugins: base.plugins.concat([
+    plugins: [
         // 避免import順序改變造成 hash 改變
         new webpack.HashedModuleIdsPlugin(),
-    ])
+    ]
 };
 
 const dev = {
-    plugins: base.plugins.concat([
+    plugins: [
         new webpack.HotModuleReplacementPlugin(),
-    ])
+    ]
 };
 
+const config = merge(base, isProd ? prod : dev);
+
 module.exports = [
-    defaultsDeep({}, base,
-        process.env.NODE_ENV === 'production' ? prod : dev
-    )
+    config
 ];

@@ -199,7 +199,7 @@ cross-env 用於跨平台設定環境變數
 
 然後接下來依序安裝缺少的module
 
-    npm install --save-dev webpack-dev-server webpack-manifest-plugin lodash.defaultsdeep clean-webpack-plugin html-webpack-plugin terser-webpack-plugin
+    npm install --save-dev webpack-dev-server webpack-manifest-plugin webpack-merge clean-webpack-plugin html-webpack-plugin terser-webpack-plugin
 
 package.json 新增指令 ， webpack-dev-server 開發階段伺服器可自動重新編譯並且載入，相依於 webpack-dev-middleware
 
@@ -223,7 +223,7 @@ webpack-manifest-plugin 是用於產生編譯檔案後的對應 .json 文件 (�
         ]
     };
 
-lodash.defaultsdeep 用來將 Webpack 的設定進行複寫
+webpack-merge 用來將 Webpack 的設定進行複寫
 
 html-webpack-plugin 編譯建立html檔案
 
@@ -238,6 +238,59 @@ terser-webpack-plugin 產生最佳化壓縮後 js
 察看環境變數 NODE_ENV
 
     echo %NODE_ENV%
+
+## 安裝 Babel
+[Babel](https://babeljs.io/docs/en/usage)
+[Try it out](https://babeljs.io/repl/build/master)
+
+babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
+
+    // webpack.config.js
+    module.exports = {
+        // ...
+        module: {
+            rules: [
+                {
+                    test: /\.jsx?$/,
+                    include: [path.resolve(__dirname, 'src')],
+                    loader: 'babel-loader',
+                    options: {
+                        presets: [
+                            [
+                                '@babel/preset-env',
+                                {
+                                    debug: true,
+                                    useBuiltIns: 'entry', // 使用 babel 的 polyfill
+                                }
+                            ],
+                            '@babel/preset-react'
+                        ],
+                        plugins: [
+                            '@babel/plugin-syntax-dynamic-import',
+                            '@babel/plugin-proposal-object-rest-spread',
+                            '@babel/plugin-syntax-import-meta',
+                            '@babel/plugin-proposal-class-properties',
+                            '@babel/plugin-proposal-json-strings',
+                            '@babel/plugin-proposal-export-default-from',
+                            '@babel/plugin-proposal-export-namespace-from',
+                            '@babel/plugin-transform-async-to-generator',
+                        ],
+                    },
+                },
+            ]
+        }
+    }
+
+babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏覽器支援 ES, React, TypeScript 語法
+
+    npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
+    npm install --save @babel/polyfill
+
+@babel/preset-react 用於編譯 React 的 .jsx 檔案
+其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
+
+    npm install --save-dev @babel/preset-react
+    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator
 
 ## 安裝 ESLint
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
@@ -332,59 +385,6 @@ babel-eslint 用於去除一些 react 語法解析上的問題
         }
     }
  
-## 安裝 Babel
-[Babel](https://babeljs.io/docs/en/usage)
-[Try it out](https://babeljs.io/repl/build/master)
-
-babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
-
-    // webpack.config.js
-    module.exports = {
-        // ...
-        module: {
-            rules: [
-                {
-                    test: /\.jsx?$/,
-                    include: [path.resolve(__dirname, 'src')],
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [
-                            [
-                                '@babel/preset-env',
-                                {
-                                    debug: true,
-                                    useBuiltIns: 'entry', // 使用 babel 的 polyfill
-                                }
-                            ],
-                            '@babel/preset-react'
-                        ],
-                        plugins: [
-                            '@babel/plugin-syntax-dynamic-import',
-                            '@babel/plugin-proposal-object-rest-spread',
-                            '@babel/plugin-syntax-import-meta',
-                            '@babel/plugin-proposal-class-properties',
-                            '@babel/plugin-proposal-json-strings',
-                            '@babel/plugin-proposal-export-default-from',
-                            '@babel/plugin-proposal-export-namespace-from',
-                            '@babel/plugin-transform-async-to-generator',
-                        ],
-                    },
-                },
-            ]
-        }
-    }
-
-babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏覽器支援 ES, React, TypeScript 語法
-
-    npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
-    npm install --save @babel/polyfill
-
-@babel/preset-react 用於編譯 React 的 .jsx 檔案
-其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
-
-    npm install --save-dev @babel/preset-react
-    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator
-
 ## 安裝 mocha 自動測試 跟 chai 測試語法
 
 [chai](https://www.chaijs.com/)
