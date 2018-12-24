@@ -1,4 +1,4 @@
-const merge = require('webpack-merge');
+const merge = require('webpack-merge').smart;
 const webpack = require('webpack');
 const path = require('path');
 
@@ -15,7 +15,7 @@ const babel_plugins = babelrc.plugins;
 
 const isProd = process.env.NODE_ENV === 'production';
 
-const base = {
+const common = {
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'cheap-module-source-map' : 'inline-source-map',
     devServer: {
@@ -33,15 +33,6 @@ const base = {
     },
     optimization: {
         minimizer: [new TerserPlugin()],
-        runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
-        splitChunks: {
-            cacheGroups: {
-                vendors: {
-                    priority: -10,
-                    test: /[\\/]node_modules[\\/]/
-                }
-            },
-        }
     },
     module: {
         rules: [
@@ -96,26 +87,9 @@ const base = {
             },
         ]
     },
-    entry: {
-        'app': ['@babel/polyfill', './src/page/index.jsx'],
-        'test': ['@babel/polyfill', './test/index.js'],
-    },
     plugins: [
         new StyleLintPlugin(),
         new ManifestPlugin(),
-        new CleanWebpackPlugin(['dist']),
-        new HtmlWebpackPlugin({
-            inject: true,
-            title: 'Test Page',
-            chunks: ['runtime', 'test'],
-            filename: 'test.html',
-        }),
-        new HtmlWebpackPlugin({
-            inject: true,
-            chunks: ['runtime', 'app'],
-            template: './src/page/index.html',
-            filename: './index.html',
-        }),
     ],
 };
 
@@ -132,7 +106,39 @@ const dev = {
     ]
 };
 
-const config = merge(base, isProd ? prod : dev);
+const base = merge(common, isProd ? prod : dev);
+
+const config = merge(base, {
+    optimization: {
+        runtimeChunk: {
+            name: 'lib.min'
+        },
+        splitChunks: {
+            chunks: 'all',
+            name: 'lib.min'
+        }
+    },
+    entry: {
+        'lib.min': ['@babel/polyfill'],
+        'app': ['./src/page/index.jsx'],
+        'test': ['./test/index.js'],
+    },
+    plugins: [
+        new CleanWebpackPlugin(['dist']),
+        new HtmlWebpackPlugin({
+            inject: true,
+            title: 'Test Page',
+            chunks: ['lib.min', 'test'],
+            filename: 'test.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
+            chunks: ['lib.min', 'app'],
+            template: './src/page/index.html',
+            filename: './index.html',
+        }),
+    ],
+});
 
 module.exports = [
     config

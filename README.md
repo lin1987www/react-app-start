@@ -59,24 +59,26 @@ cross-env 用於跨平台設定環境變數
 建立 webpack.config.js
 
     // webpack.config.js
-    const defaultsDeep = require('lodash.defaultsdeep');
+    const merge = require('webpack-merge').smart;
     const webpack = require('webpack');
     const path = require('path');
-
+    
     const ManifestPlugin = require('webpack-manifest-plugin');
     const CleanWebpackPlugin = require('clean-webpack-plugin');
     const HtmlWebpackPlugin = require('html-webpack-plugin');
     const TerserPlugin = require('terser-webpack-plugin');
-
+    
     const StyleLintPlugin = require('stylelint-webpack-plugin');
-
+    
     const babelrc = require('./.babelrc');
     const babel_presets = babelrc.presets;
     const babel_plugins = babelrc.plugins;
-
-    const base = {
-        mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
-        devtool: process.env.NODE_ENV === 'production' ? 'cheap-module-source-map' : 'inline-source-map',
+    
+    const isProd = process.env.NODE_ENV === 'production';
+    
+    const common = {
+        mode: isProd ? 'production' : 'development',
+        devtool: isProd ? 'cheap-module-source-map' : 'inline-source-map',
         devServer: {
             contentBase: './dist',
             hot: true
@@ -92,15 +94,6 @@ cross-env 用於跨平台設定環境變數
         },
         optimization: {
             minimizer: [new TerserPlugin()],
-            runtimeChunk: 'single',  // 將runtime 從 Boilerplate  分離
-            splitChunks: {
-                cacheGroups: {
-                    vendors: {
-                        priority: -10,
-                        test: /[\\/]node_modules[\\/]/
-                    }
-                },
-            }
         },
         module: {
             rules: [
@@ -155,46 +148,61 @@ cross-env 用於跨平台設定環境變數
                 },
             ]
         },
-        entry: {
-            'app': ['@babel/polyfill', './src/page/index.jsx'],
-            'test': ['@babel/polyfill', './test/index.js'],
-        },
         plugins: [
             new StyleLintPlugin(),
             new ManifestPlugin(),
+        ],
+    };
+    
+    const prod = {
+        plugins: [
+            // 避免import順序改變造成 hash 改變
+            new webpack.HashedModuleIdsPlugin(),
+        ]
+    };
+    
+    const dev = {
+        plugins: [
+            new webpack.HotModuleReplacementPlugin(),
+        ]
+    };
+    
+    const base = merge(common, isProd ? prod : dev);
+    
+    const config = merge(base, {
+        optimization: {
+            runtimeChunk: {
+                name: 'lib.min'
+            },
+            splitChunks: {
+                chunks: 'all',
+                name: 'lib.min'
+            }
+        },
+        entry: {
+            'lib.min': ['@babel/polyfill'],
+            'app': ['./src/page/index.jsx'],
+            'test': ['./test/index.js'],
+        },
+        plugins: [
             new CleanWebpackPlugin(['dist']),
             new HtmlWebpackPlugin({
                 inject: true,
                 title: 'Test Page',
-                chunks: ['runtime', 'test'],
+                chunks: ['lib.min', 'test'],
                 filename: 'test.html',
             }),
             new HtmlWebpackPlugin({
                 inject: true,
-                chunks: ['runtime', 'app'],
+                chunks: ['lib.min', 'app'],
                 template: './src/page/index.html',
                 filename: './index.html',
             }),
         ],
-    };
-
-    const prod = {
-        plugins: base.plugins.concat([
-            // 避免import順序改變造成 hash 改變
-            new webpack.HashedModuleIdsPlugin(),
-        ])
-    };
-
-    const dev = {
-        plugins: base.plugins.concat([
-            new webpack.HotModuleReplacementPlugin(),
-        ])
-    };
-
+    });
+    
     module.exports = [
-        defaultsDeep({}, base,
-            process.env.NODE_ENV === 'production' ? prod : dev
-        )
+        config
     ];
 
 然後接下來依序安裝缺少的module
