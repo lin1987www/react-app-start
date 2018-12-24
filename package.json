@@ -9,8 +9,8 @@
     "test:mocha": "mocha --require @babel/register ./test/index.js",
     "test:css": "stylelint src/**/*.css",
     "start": "webpack-dev-server --open --config webpack.config.js",
-    "build": "cross-env NODE_ENV=production webpack --progress --config webpack.config.js",
-    "build:dev": "cross-env NODE_ENV=development webpack --progress --config webpack.config.js",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --progress --config webpack.config.js",
+    "build:dev": "cross-env NODE_ENV=development NODE_OPTIONS=--max_old_space_size=4096 webpack --progress --config webpack.config.js",
     "build:css": "postcss src/**/*.css --base src --dir dist --config postcss.config.js"
   },
   "author": "",

@@ -810,3 +810,8 @@ Use https://github.com/webpack-contrib/terser-webpack-plugin for ES6 (webpack@5 
 [Selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors)
 [@media](https://developer.mozilla.org/en-US/docs/Web/CSS/@media)
 
+### [Node.js heap out of memory](https://stackoverflow.com/a/53443394/1584100)
+
+    export NODE_OPTIONS=--max_old_space_size=4096
+    
+設定環境變數使得 node 的記憶體空間更大，預設約1.7G左右
