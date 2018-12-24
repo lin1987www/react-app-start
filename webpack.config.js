@@ -66,7 +66,6 @@ const common = {
             },
             {
                 test: /\.css$/,
-                exclude: /node_modules/,
                 use: [
                     {
                         loader: 'style-loader',

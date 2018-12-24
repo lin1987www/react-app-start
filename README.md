@@ -127,7 +127,6 @@ cross-env 用於跨平台設定環境變數
                 },
                 {
                     test: /\.css$/,
-                    exclude: /node_modules/,
                     use: [
                         {
                             loader: 'style-loader',
@@ -669,7 +668,6 @@ stylelint-config-recommended 用於 stylielint 設定檔
             rules: [
                 {
                     test: /\.css$/,
-                    exclude: /node_modules/,
                     use: [
                         {
                             loader: 'style-loader',
