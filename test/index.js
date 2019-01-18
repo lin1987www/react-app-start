@@ -1,1 +1,2 @@
-import function_test from './function.test';
+import './function.test';
+import './sinon.test';

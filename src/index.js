@@ -1,4 +1,4 @@
-import HelloWorld from './components/hello-world.jsx';
+import HelloWorld from './components/HelloWorld.jsx';
 
 export {
     HelloWorld

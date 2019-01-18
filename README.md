@@ -167,35 +167,35 @@ cross-env 用於跨平台設定環境變數
     };
     
     const base = merge(common, isProd ? prod : dev);
-    
+        
     const config = merge(base, {
         optimization: {
             runtimeChunk: {
                 name: 'lib.min'
             },
             splitChunks: {
+                name: 'lib.min',
                 chunks: 'all',
-                name: 'lib.min'
             }
         },
         entry: {
             'lib.min': ['@babel/polyfill'],
-            'app': ['./src/page/index.jsx'],
+            'index': ['./src/web/index.jsx'],
             'test': ['./test/index.js'],
         },
         plugins: [
             new CleanWebpackPlugin(['dist']),
             new HtmlWebpackPlugin({
-                inject: true,
+                inject: 'body',
+                chunks: ['lib.min', 'index'],
+                template: './src/web/index.html',
+                filename: 'index.html',
+            }),
+            new HtmlWebpackPlugin({
+                inject: 'body',
                 title: 'Test Page',
                 chunks: ['lib.min', 'test'],
                 filename: 'test.html',
-            }),
-            new HtmlWebpackPlugin({
-                inject: true,
-                chunks: ['lib.min', 'app'],
-                template: './src/page/index.html',
-                filename: './index.html',
             }),
         ],
     });
@@ -327,6 +327,14 @@ babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏�
 10. 需要半引號作為結尾
 11. 使用JavaScript格式作為設定檔
 
+修改縮排 indent 規則為以下所示
+
+    'indent': [
+        'error',
+        4,
+        {SwitchCase: 1}
+    ],
+
 產生.eslintrc.js設定檔案後 Enable ESLint 關閉其他 Lint 如 JSLint
 
 IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換行方式
@@ -348,8 +356,25 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
         }
     }
 
+### [Disabling Rules with Inline Comments](https://eslint.org/docs/user-guide/configuring#disabling-rules-with-inline-comments)
 
-[ESLint React](https://www.npmjs.com/package/eslint-plugin-react)
+    /* eslint-disable */
+    alert('foo');
+    /* eslint-enable */
+
+    /* eslint-disable no-alert, no-console */
+    alert('foo');
+    console.log('bar');
+    /* eslint-enable no-alert, no-console */
+
+    alert('foo'); // eslint-disable-line no-alert, quotes, semi
+    
+    // eslint-disable-next-line
+    alert('foo');
+
+[Enforce specifying rules to disable in eslint-disable comments](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/master/docs/rules/no-abusive-eslint-disable.md)
+
+## [ESLint React](https://www.npmjs.com/package/eslint-plugin-react)
 
 eslint-plugin-react 用於檢查 react 的語法，修改 .eslintrc.js 新增 plugin:react/recommended 到 extends
 
@@ -401,14 +426,14 @@ babel-eslint 用於去除一些 react 語法解析上的問題
 
 @babel/register 搭配 mocha 所使用，讓即使在開發環境底下IDE也能執行 babel 後的語法
 
-mocha 和 mocha-loader 用於編譯出瀏覽器也能執行的測試檔案
+mocha 和 mocha-loader 用於編譯出瀏覽器也能執行的測試網頁
 
 然後手動建立測試用的三個檔案
 
 test/index.js 是測試檔案主體，可以引入其他測試檔案
 
     // test/index.js
-    import function_test from './function.test';
+    import './function.test';
 
 test/function.test.js 是測試部分 function 運作，在此只是範例
 
@@ -508,13 +533,13 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
 ## 安裝 react
 
-    npm install --save react react-dom
-    npm install --save-dev html-loader prop-types
+    npm install --save react react-dom prop-types
+    npm install --save-dev html-loader
 
 建立 src/index.js
 
     // src/index.js
-    import HelloWorld from './components/hello-world.jsx';
+    import HelloWorld from './components/HelloWorld.jsx';
 
     export {
         HelloWorld
@@ -527,9 +552,9 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
       "main": "src/index.js",
     }
 
-建立 src/components/hello-world.jsx
+建立 src/components/HelloWorld.jsx
 
-    // src/components/hello-world.jsx
+    // src/components/HelloWorld.jsx
     import React from 'react';
     import PropTypes from 'prop-types';
 
@@ -545,9 +570,9 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     export {HelloWorld as default};
 
-建立 src/page/index.html
+建立 src/web/index.html
 
-    <!-- src/page/index.html -->
+    <!-- src/web/index.html -->
     <!DOCTYPE html>
     <html>
     <head>
@@ -559,12 +584,12 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
     </body>
     </html>
 
-建立 src/page/index.html 對應的 src/page/index.jsx
+建立 src/web/index.html 對應的 src/page/index.jsx
 
-    // src/page/index.jsx
+    // src/web/index.jsx
     import React from 'react';
     import ReactDOM from 'react-dom';
-    import HelloWorld from '../components/hello-world.jsx';
+    import HelloWorld from '../components/HelloWorld.jsx';
 
     ReactDOM.render(
         <HelloWorld name="world!" /> ,
@@ -606,8 +631,8 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
             new HtmlWebpackPlugin({
                 inject: true,
                 chunks: ['runtime', 'app'],
-                template: './src/page/index.html',
-                filename: './index.html',
+                template: './src/web/index.html',
+                filename: 'index.html',
             }),
         ],
     }
@@ -655,8 +680,8 @@ stylelint-config-recommended 用於 stylielint 設定檔
     // package.json
     {
         "scripts": {
-            "test:css": "stylelint src/**/*.css",
-            "build:css" : "postcss src/**/*.css --base src --dir dist --config postcss.config.js",
+            "test:css": "stylelint src/**/*.css src/**/*.scss",
+            "build:css": "postcss src/**/*.css src/**/*.scss --base src --dir dist --config postcss.config.js"
         }
     }
 
@@ -702,9 +727,9 @@ stylelint-config-recommended 用於 stylielint 設定檔
         ],
     }
 
-建立 src/page/index.css
+建立 src/web/index.css
 
-    /* src/page/index.css */
+    /* src/web/index.css */
     @import "red.css";
 
     body {
@@ -715,9 +740,9 @@ stylelint-config-recommended 用於 stylielint 設定檔
         display: flex;
     }
 
-建立 src/page/red.scss
+建立 src/web/red.scss
 
-    /* src/page/red.scss */
+    /* src/web/red.scss */
     $red-color: #880000;
     * {
         color: $red-color;
@@ -725,16 +750,242 @@ stylelint-config-recommended 用於 stylielint 設定檔
 
 修改 index.jsx 加入 import index.css
 
-    // src/page/index.jsx
+    // src/web/index.jsx
     import React from 'react';
     import ReactDOM from 'react-dom';
-    import HelloWorld from '../components/hello-world.jsx';
+    import HelloWorld from '../components/HelloWorld.jsx';
     import './index.css';
 
     ReactDOM.render(
         <HelloWorld name="world!" /> ,
         document.getElementById('root')
     );
+    
+## Redux 
+
+    npm install --save redux react-redux
+
+## redux-devtools-extension
+
+[redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension#installation)
+
+[use-redux-devtools-extension-package-from-npm](https://github.com/zalmoxisus/redux-devtools-extension#13-use-redux-devtools-extension-package-from-npm)
+
+    npm install --save-dev redux-devtools-extension
+    
+使用方式    
+    
+    import {composeWithDevTools} from 'redux-devtools-extension';
+    
+    const store = createStore(
+        rootReducer,
+        composeWithDevTools(
+            // applyMiddleware(...middleware),
+            // other store enhancers if any
+        )
+    );    
+
+## Redux Todo List
+
+
+
+
+##  enzyme
+
+    npm install --save-dev enzyme enzyme-adapter-react-16
+
+建立設定檔 setupTests.js
+
+    // src/setupTests.js
+    import {configure} from 'enzyme';
+    import Adapter from 'enzyme-adapter-react-16';
+    
+    configure({adapter: new Adapter()});
+    
+        
+## Jest
+
+    npm install --save-dev jest babel-jest babel-core@^7.0.0-bridge.0 react-test-renderer
+
+新增指令到 package.json
+
+    // package.json
+    {
+        "scripts": {
+            "test:jest": "jest __test__ --no-cache --watch",
+        }
+    }
+
+test:jest 使用 watch 模式開啟，進入模式後使用互動的方式(i)逐步更新 snapshot 。
+
+注意因為 jest snapshot 測試自動產生的 \_\_snapshots\_\_ 資料夾中的檔案應視為程式碼，一併加入VCS當，才能追蹤其變化。
+
+### Snapshot test
+
+建立 \_\_test\_\_/snapshot.test.js
+
+    import React from 'react';
+    import renderer from 'react-test-renderer';
+    
+    it('renders correctly', () => {
+        const tree = renderer
+            .create(<a href="http://www.facebook.com">Facebook</a>)
+            .toJSON();
+        expect(tree).toMatchSnapshot();
+    });
+
+建立 \_\_test\_\_/.eslintrc.js
+
+    module.exports = {
+        env: {
+            'jest': true
+        },
+        rules: {
+            'no-unused-vars': [
+                'off',
+                {}
+            ],
+            'no-console': [
+                'off',
+                {allow: ["warn", "error"]}
+            ],
+        }
+    };
+
+
+## Sinon
+
+    npm install --save-dev sinon
+
+建立 test/sinon.test.js
+    
+    import {assert, expect, should} from 'chai';
+    import sinon from 'sinon';
+    
+    describe('Sinon', () => {
+        describe('Spy', () => {
+            it('should call method once with each argument', () => {
+                let api = {method: x => x};
+                let spy = sinon.spy(api, 'method');
+    
+                api.method(42);
+                api.method(1);
+    
+                assert(spy.withArgs(42).calledOnce);
+                assert(spy.withArgs(1).calledOnce);
+                assert.equal(spy.returnValues[0], 42);
+                assert.equal(spy.returnValues[1], 1);
+                assert.equal(spy.args[0][0], 42);
+                assert.equal(spy.args[1][0], 1);
+            });
+        });
+        describe('Stub', () => {
+            it('test should stub method differently based on arguments', function () {
+                // Test stubs are functions (spies) with pre-programmed behavior.
+                let api = {method: () => 0};
+                let callback = sinon.stub(api, 'method').callsFake(() => 2);
+                callback.withArgs(42).returns(1);
+                callback.withArgs(1).throws(new Error('name'));
+    
+                assert.equal(api.method(), 2);
+                assert.equal(api.method(42), 1);
+                assert.throws(() => api.method(1), Error, 'name');
+            });
+        });
+        describe('Mock', () => {
+            it('test should call once when exceptions', () => {
+                let api = {
+                    method: function () {
+                    }
+                };
+                let mock = sinon.mock(api);
+                mock.expects('method').exactly(1);
+                api.method();
+                mock.verify();
+            });
+        });
+        describe('Fake', () => {
+            function once(fn) {
+                let returnValue, called = false;
+                return function () {
+                    if (!called) {
+                        called = true;
+                        returnValue = fn.apply(this, arguments);
+                    }
+                    return returnValue;
+                };
+            }
+    
+            it('calls the original function', () => {
+                let callback = sinon.fake();
+                let proxy = once(callback);
+    
+                proxy();
+                proxy();
+                proxy();
+    
+                assert.equal(callback.called, true);
+                assert.equal(callback.callCount, 1);
+            });
+            it('calls original function with right this and args', () => {
+                let callback = sinon.fake();
+                let proxy = once(callback);
+                let obj = {};
+    
+                proxy.call(obj, 1, 2, 3);
+    
+                assert(callback.calledOn(obj));
+                assert(callback.calledWith(1, 2, 3));
+            });
+            it('returns the return value from the original function', () => {
+                let callback = sinon.fake.returns(42);
+                let proxy = once(callback);
+    
+                assert.equal(proxy(), 42);
+            });
+        });
+        describe('Fake Clock', () => {
+            let clock;
+            beforeEach(() => {
+                // runs before all tests in this block
+                clock = sinon.useFakeTimers();
+            });
+            afterEach(() => {
+                // runs after all tests in this block
+                clock.restore();
+            });
+            it('calls callback after 100ms', function () {
+                function debounce(callback) {
+                    let timer;
+                    return function () {
+                        clearTimeout(timer);
+                        let args = [].slice.call(arguments);
+                        timer = setTimeout(function () {
+                            callback.apply(this, args);
+                        }, 100);
+                    };
+                }
+    
+                let callback = sinon.fake();
+                let throttled = debounce(callback);
+    
+                throttled();
+    
+                clock.tick(99);
+                assert.equal(callback.notCalled, true);
+    
+                clock.tick(1);
+                assert.equal(callback.calledOnce, true);
+    
+                assert.equal(new Date().getTime(), 100);
+            });
+        });
+    });
+
+修改 test/index.js
+
+    import './function.test';
+    import './sinon.test';
 
 ## 設定瀏覽器支援 Browserlist
 
@@ -752,7 +1003,6 @@ stylelint-config-recommended 用於 stylielint 設定檔
         "ie >= 8"
       ],
     }
-
 
 ## 額外問題
 

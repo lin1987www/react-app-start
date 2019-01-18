@@ -25,9 +25,14 @@ module.exports = {
         ]
     },
     'rules': {
+        'no-console': [
+            'off',
+            {allow: ["warn", "error"]}
+        ],
         'indent': [
             'error',
-            4
+            4,
+            {SwitchCase: 1}
         ],
         'linebreak-style': [
             'error',
@@ -40,6 +45,6 @@ module.exports = {
         'semi': [
             'error',
             'always'
-        ]
+        ],
     },
 };

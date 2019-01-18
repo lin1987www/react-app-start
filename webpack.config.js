@@ -53,7 +53,7 @@ const common = {
                 },
             },
             {
-                test: /test\.js$/,
+                test: /(spec|test)\.jsx?$/,
                 exclude: /node_modules/,
                 use: ['mocha-loader'],
             },
@@ -113,28 +113,35 @@ const config = merge(base, {
             name: 'lib.min'
         },
         splitChunks: {
+            name: 'lib.min',
             chunks: 'all',
-            name: 'lib.min'
         }
     },
     entry: {
         'lib.min': ['@babel/polyfill'],
-        'app': ['./src/page/index.jsx'],
+        'index': ['./src/web/index.jsx'],
         'test': ['./test/index.js'],
+        'todo_list': ['./src/web/todo_list.jsx'],
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
         new HtmlWebpackPlugin({
-            inject: true,
+            inject: 'body',
+            chunks: ['lib.min', 'index'],
+            template: './src/web/index.html',
+            filename: 'index.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: 'body',
             title: 'Test Page',
             chunks: ['lib.min', 'test'],
             filename: 'test.html',
         }),
         new HtmlWebpackPlugin({
-            inject: true,
-            chunks: ['lib.min', 'app'],
-            template: './src/page/index.html',
-            filename: './index.html',
+            inject: 'body',
+            title: 'Todo List',
+            chunks: ['lib.min', 'todo_list'],
+            filename: 'todo_list.html',
         }),
     ],
 });

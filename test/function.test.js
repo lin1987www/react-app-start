@@ -1,4 +1,4 @@
-const {assert, expect, should} = require('chai');
+import {assert, expect, should} from 'chai';
 
 describe('Mocha Test', function () {
     describe('Basic', function () {
