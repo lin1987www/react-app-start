@@ -7,7 +7,7 @@ class TodoList extends React.Component {
         const {todos, toggleTodo} = this.props;
         return (
             <ul>
-                {todos.map( todo =>
+                {todos.map(todo =>
                     <Todo
                         key={todo.id}
                         {...todo}
@@ -30,4 +30,6 @@ TodoList.propTypes = {
     toggleTodo: PropTypes.func.isRequired
 };
 
-export {TodoList as default};
+export {
+    TodoList as default
+};

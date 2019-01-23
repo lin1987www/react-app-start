@@ -1,6 +1,7 @@
 module.exports = {
     env: {
-        'jest': true
+        'jest': true,
+        'mocha': false
     },
     rules: {
         'no-unused-vars': [

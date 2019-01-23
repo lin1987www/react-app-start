@@ -11,4 +11,6 @@ HelloWorld.propTypes = {
     name: PropTypes.string.isRequired
 };
 
-export {HelloWorld as default};
+export {
+    HelloWorld as default
+};

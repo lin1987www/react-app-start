@@ -1,4 +1,4 @@
-import {assert, expect, should} from 'chai';
+import {assert, expect, should} from 'chai'; // eslint-disable-line no-unused-vars
 
 describe('Mocha Test', function () {
     describe('Basic', function () {

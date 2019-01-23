@@ -386,6 +386,13 @@ babel-eslint 用於去除一些 react 語法解析上的問題
     module.exports = {
         // ...
         'parser': 'babel-eslint',
+        'env': {
+            'browser': true,
+            'commonjs': true,
+            'es6': true,
+            'node': true,
+            'mocha': true,
+        },
         'extends': ['eslint:recommended', 'plugin:react/recommended'],
         'settings': {
             'react': {
@@ -398,6 +405,8 @@ babel-eslint 用於去除一些 react 語法解析上的問題
             ]
         }
     };
+
+其中 env 是指全域變數 global variables
 
 建立 .eslintignore
 
@@ -455,9 +464,6 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     // test/.eslintrc.js
     module.exports = {
-        env: {
-            'mocha': true,
-        },
         rules: {
             'no-unused-vars': [
                 'off',
@@ -775,11 +781,14 @@ stylelint-config-recommended 用於 stylielint 設定檔
     
 使用方式    
     
-    import {composeWithDevTools} from 'redux-devtools-extension';
+    import {createStore, applyMiddleware, compose} from 'redux'; 
+    
+    // eslint-disable-next-line no-underscore-dangle
+    const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
     
     const store = createStore(
         rootReducer,
-        composeWithDevTools(
+        composeEnhancers(
             // applyMiddleware(...middleware),
             // other store enhancers if any
         )
@@ -794,15 +803,138 @@ stylelint-config-recommended 用於 stylielint 設定檔
 
     npm install --save-dev enzyme enzyme-adapter-react-16
 
-建立設定檔 setupTests.js
+修改設定測試檔 setupTests.js
 
-    // src/setupTests.js
+    // setupTests.js
     import {configure} from 'enzyme';
     import Adapter from 'enzyme-adapter-react-16';
     
     configure({adapter: new Adapter()});
+
+新增指令參數
+
+    mocha --require setupTests.js
+
+## [enzyme_render_diffs](https://gist.github.com/fokusferit/e4558d384e4e9cab95d04e5f35d4f913)
+
+### Shallow
+
+Real unit test (isolation, no children render)
+
+### Simple shallow
+
+Calls:
+
+- constructor
+- render
+
+### Shallow + setProps
+
+Calls:
+
+- componentWillReceiveProps
+- shouldComponentUpdate
+- componentWillUpdate
+- render
+
+### Shallow + unmount
+
+Calls:
+
+- componentWillUnmount
+
+### Mount
+
+The only way to test componentDidMount and componentDidUpdate.
+Full rendering including child components.
+Requires a DOM (jsdom, domino).
+More constly in execution time.
+If react is included before JSDOM, it can require some tricks:
+
+`require('fbjs/lib/ExecutionEnvironment').canUseDOM = true;` 
+
+### Simple mount
+
+Calls:
+
+- constructor
+- render
+- componentDidMount
+
+### Mount + setProps
+
+Calls:
+
+- componentWillReceiveProps
+- shouldComponentUpdate
+- componentWillUpdate
+- render
+- componentDidUpdate
+
+### Mount + unmount
+
+Calls:
+
+- componentWillUnmount
+
+### Render
+
+only calls render but renders all children.
+
+So my rule of thumbs is:
+
+- Always begin with shallow
+- If componentDidMount or componentDidUpdate should be tested, use mount
+- If you want to test component lifecycle and children behavior, use mount
+- If you want to test children rendering with less overhead than mount and you are not interested in lifecycle methods, use render
+
+There seems to be a very tiny use case for render. I like it because it seems snappier than requiring jsdom but as @ljharb said, we cannot really test React internals with this.
+
+I wonder if it would be possible to emulate lifecycle methods with the render method just like shallow ?
+I would really appreciate if you could give me the use cases you have for render internally or what use cases you have seen in the wild.
+
+I'm also curious to know why shallow does not call componentDidUpdate.
+
+Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726 this gist is basically a copy of the comment but I wanted to separate it from there as it includes a lot of general Enzyme information which is missing in the docs.
+
+## [JSDOM + Mocha](https://github.com/airbnb/enzyme/blob/master/docs/guides/jsdom.md#jsdom--mocha)
+
+用於 IDE 的 Node 環境下模擬 DOM 環境
+
+    npm install --save-dev jsdom
+
+修改設定測試檔 setupTests.js
     
-        
+    // setupTests.js
+    const { JSDOM } = require('jsdom');
+    
+    const jsdom = new JSDOM('<!doctype html><html><body></body></html>');
+    const { window } = jsdom;
+    
+    function copyProps(src, target) {
+      Object.defineProperties(target, {
+        ...Object.getOwnPropertyDescriptors(src),
+        ...Object.getOwnPropertyDescriptors(target),
+      });
+    }
+    
+    global.window = window;
+    global.document = window.document;
+    global.navigator = {
+      userAgent: 'node.js',
+    };
+    global.requestAnimationFrame = function (callback) {
+      return setTimeout(callback, 0);
+    };
+    global.cancelAnimationFrame = function (id) {
+      clearTimeout(id);
+    };
+    copyProps(window, global);
+
+新增指令參數
+
+    mocha --require setupTests.js
+
 ## Jest
 
     npm install --save-dev jest babel-jest babel-core@^7.0.0-bridge.0 react-test-renderer
@@ -838,7 +970,8 @@ test:jest 使用 watch 模式開啟，進入模式後使用互動的方式(i)逐
 
     module.exports = {
         env: {
-            'jest': true
+            'jest': true,
+            'mocha': false
         },
         rules: {
             'no-unused-vars': [

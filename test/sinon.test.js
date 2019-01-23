@@ -1,4 +1,4 @@
-import {assert, expect, should} from 'chai';
+import {assert, expect, should} from 'chai'; // eslint-disable-line no-unused-vars
 import sinon from 'sinon';
 
 describe('Sinon', () => {

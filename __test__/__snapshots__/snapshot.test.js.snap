@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Hello World renders correctly 1`] = `
+<h1>
+  Hello, 
+  John
+</h1>
+`;
+
 exports[`renders correctly 1`] = `
 <a
   href="http://www.facebook.com"

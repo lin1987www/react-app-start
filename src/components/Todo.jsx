@@ -23,4 +23,6 @@ Todo.propTypes = {
     text: PropTypes.string.isRequired
 };
 
-export {Todo as default};
+export {
+    Todo as default
+};
