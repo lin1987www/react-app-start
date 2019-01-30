@@ -16,7 +16,9 @@
     "start": "webpack-dev-server --open --config webpack.config.js",
     "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --progress --config webpack.config.js",
     "build:dev": "cross-env NODE_ENV=development NODE_OPTIONS=--max_old_space_size=4096 webpack --progress --config webpack.config.js",
-    "build:css": "postcss src/**/*.css src/**/*.scss --base src --dir dist --config postcss.config.js"
+    "build:css": "postcss src/**/*.css src/**/*.scss --base src --dir dist --config postcss.config.js",
+    "i18n:src": "node ./scripts/build-i18n-src.js ./translations/messages/src ./translations",
+    "build:msgs": "node ./scripts/merge-messages.js ./translations"
   },
   "author": "",
   "license": "MIT",
@@ -51,6 +53,8 @@
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
     "babel-loader": "^8.0.5",
+    "babel-plugin-react-intl": "^3.0.1",
+    "babel-plugin-react-intl-auto": "^1.5.0",
     "chai": "^4.2.0",
     "clean-webpack-plugin": "^1.0.0",
     "cross-env": "^5.2.0",
@@ -87,8 +91,10 @@
     "@babel/polyfill": "^7.2.5",
     "postcss-import": "^12.0.1",
     "prop-types": "^15.6.2",
+    "query-string": "^6.2.0",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
+    "react-intl": "^2.8.0",
     "react-redux": "^6.0.0",
     "redux": "^4.0.1"
   }

@@ -335,6 +335,13 @@ babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏�
         {SwitchCase: 1}
     ],
 
+修改字串符號規則，改為關閉
+
+    'quotes': [
+        'off',
+        'single'
+    ],
+
 產生.eslintrc.js設定檔案後 Enable ESLint 關閉其他 Lint 如 JSLint
 
 IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換行方式
@@ -417,7 +424,7 @@ babel-eslint 用於去除一些 react 語法解析上的問題
     build/*
     dist/*
 
-新增 package.json 可執行ESLint 檢測的指令
+新增 package.json 可執行 ESLint 檢測的指令
     
     // package.json
     {
@@ -934,6 +941,98 @@ Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726
 新增指令參數
 
     mocha --require setupTests.js
+
+##  i18n
+
+    npm install --save-dev babel-plugin-react-intl babel-plugin-react-intl-auto
+    npm install --save query-string
+
+[babel-plugin-react-intl](https://github.com/yahoo/babel-plugin-react-intl) 產生個別 message
+
+建立 scr/components/Greeting.jsx
+
+    import React from 'react';
+    import PropTypes from 'prop-types';
+    import {injectIntl, FormattedMessage, defineMessages} from 'react-intl';
+    import LocaleFooter from './LocaleFooter.jsx';
+    
+    const message = defineMessages({
+        greeting: 'Hi, \\{{name}\\}'
+    });
+    
+    class Greeting extends React.Component {
+        render() {
+            const {name, intl} = this.props; // eslint-disable-line no-unused-vars
+            return (<div>
+                <h1>
+                    <FormattedMessage
+                        {...message.greeting}
+                        values={{
+                            name
+                        }}
+                    />
+                </h1>
+                <LocaleFooter/>
+            </div>);
+        }
+    }
+    
+    Greeting.propTypes = {
+        name: PropTypes.string.isRequired,
+        intl: PropTypes.object.isRequired
+    };
+    
+    const WrappedGreeting = injectIntl(Greeting);
+    
+    export {
+        WrappedGreeting as default
+    };
+
+[babel-plugin-react-intl-auto](https://github.com/akameco/babel-plugin-react-intl-auto) 用於自動產生 message 的 id
+
+使用 babel-plugin-react-intl-auto 後可以將 defineMessages 程式碼簡化成
+
+    const message = defineMessages({
+        greeting: 'Hello, \\{{name}\\}. !'
+    });
+
+修改 .babelrc.js 設定檔，新增 plugin 設定，使得輸出 message 到 指定資料夾中
+
+    ['react-intl-auto', {
+        'removePrefix': 'app/'
+    }],
+    ["react-intl", {
+        "messagesDir": "./translations/messages/"
+    }],
+
+scratch-l10n 將個別的 message 的檔案 整合成單一語言檔案
+
+將  scratch-l10n 中的 scripts/build-i18n-src.js 複製到當前資料夾下 ./scripts/build-i18n-src.js 
+
+可執行指令 新增到 package.json 的 scripts 當中
+
+    // package.json
+    {
+        "scripts": {
+            "i18n:src": "node ./scripts/build-i18n-src.js ./translations/messages/src ./translations/"
+        }
+    }
+
+這指令將會把 ./translations/messages/src 中所有的 messages 整合成一個 en.json 檔案放到 ./translations/ 底下
+
+之後將產生出來的 en.json 改成其他語言的 json 檔案 放在相同的資料夾底下(如 zh-tw.json)，最後在使用 彙整的指令整合在一起 (參考 scripts/build-data.js 的寫法) 
+
+新增指令為
+
+    // package.json
+    {
+        "scripts": {
+            "build:msgs": "node ./scripts/merge-messages.js ./translations"
+        }
+    }
+    
+scratch-translate-extension-languages 將單一語言檔案 翻譯成其他語言檔案
+
 
 ## Jest
 
