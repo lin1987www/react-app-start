@@ -122,7 +122,7 @@ const config = merge(base, {
         'index': ['./src/web/index.jsx'],
         'test': ['./test/index.js'],
         'todo_list': ['./src/web/todo_list.jsx'],
-        'dummy': ['./src/web/dummy.jsx'],
+        'hi_i18n': ['./src/web/hi_i18n.jsx'],
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -146,9 +146,9 @@ const config = merge(base, {
         }),
         new HtmlWebpackPlugin({
             inject: 'body',
-            title: 'Dummy',
-            chunks: ['lib.min', 'dummy'],
-            filename: 'dummy.html',
+            title: 'Hi i18n',
+            chunks: ['lib.min', 'hi_i18n'],
+            filename: 'hi_i18n.html',
         }),
     ],
 });

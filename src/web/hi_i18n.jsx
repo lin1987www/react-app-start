@@ -13,7 +13,7 @@ rootDiv.setAttribute('id', 'root');
 document.body.prepend(rootDiv);
 
 ReactDOM.render(
-    <WrappedApp data-name={'john'} data-text={'lin'} options={{}} name='World'/>,
+    <WrappedApp name='World'/>,
     rootDiv
 );
 
