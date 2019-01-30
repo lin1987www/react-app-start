@@ -4,11 +4,11 @@ import {selectLocale} from '../reducers/locales';
 import PropTypes from 'prop-types';
 
 const mapStateToProps = (state, ownProps) => ({
-    active: ownProps.locale === state.locales.locale
+    active: ownProps.localeCode === state.locales.locale
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({
-    onClick: () => dispatch(selectLocale(ownProps.locale))
+    onClick: () => dispatch(selectLocale(ownProps.localeCode))
 });
 
 const LocaleLink = connect(
@@ -17,7 +17,7 @@ const LocaleLink = connect(
 )(Link);
 
 LocaleLink.propTypes = {
-    locale: PropTypes.string.isRequired
+    localeCode: PropTypes.string.isRequired
 };
 
 export default LocaleLink;

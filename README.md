@@ -957,7 +957,8 @@ Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726
     import LocaleFooter from './LocaleFooter.jsx';
     
     const message = defineMessages({
-        greeting: 'Hi, \\{{name}\\}'
+        id: 'greeting',
+        defaultMessage: 'Hi, \\{{name}\\}'
     });
     
     class Greeting extends React.Component {
@@ -993,7 +994,7 @@ Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726
 使用 babel-plugin-react-intl-auto 後可以將 defineMessages 程式碼簡化成
 
     const message = defineMessages({
-        greeting: 'Hello, \\{{name}\\}. !'
+        greeting: 'Hi, \\{{name}\\}'
     });
 
 修改 .babelrc.js 設定檔，新增 plugin 設定，使得輸出 message 到 指定資料夾中
@@ -1030,6 +1031,9 @@ scratch-l10n 將個別的 message 的檔案 整合成單一語言檔案
             "build:msgs": "node ./scripts/merge-messages.js ./translations"
         }
     }
+    
+執行後會在 ./translations 底下產生 msgs.js 的資料夾 ， 若指定語言下 其 msgs.js 並沒有指定id的對應字串的話，則以當初 defineMessages 中 defaultMessage 的值做為顯示
+    
     
 scratch-translate-extension-languages 將單一語言檔案 翻譯成其他語言檔案
 
