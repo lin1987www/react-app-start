@@ -1032,9 +1032,37 @@ scratch-l10n 將個別的 message 的檔案 整合成單一語言檔案
         }
     }
     
-執行後會在 ./translations 底下產生 msgs.js 的資料夾 ， 若指定語言下 其 msgs.js 並沒有指定id的對應字串的話，則以當初 defineMessages 中 defaultMessage 的值做為顯示
+執行後會在 ./translations 底下產生 msgs.js 的資料夾 ， 若指定語言下 其 msgs.js 並沒有指定id的對應字串的話，則以當初 defineMessages 中 defaultMessage 的值做為顯示    
     
+IntlProvider 是被 Context.Provider 所包覆   
     
+    // import {IntlProvider} from 'react-intl';
+    <Context.Provider>
+        <IntlProvider />
+    </Context.Provider>   
+    
+當 IntlProvider 被 react-redux 所 connect 的時候，則會額外多出 <Connect(IntelProvider)> 跟 <Context.Consumer> 所包覆
+
+    // import {IntlProvider} from 'react-intl';
+    // import {connect} from 'react-redux';
+    <Context.Provider>
+    
+        <Connect(IntelProvider)>
+            <Context.Consumer>
+            
+                <IntlProvider />
+                
+            </Context.Consumer>
+        </Connect(IntelProvider)
+        
+    </Context.Provider>  
+
+當使用 injectIntl 的時候，再用一個 <InjectIntl> 所包覆起來
+
+    <InjectIntl(Component)>
+        <Component />
+    </InjectIntl>
+
 scratch-translate-extension-languages 將單一語言檔案 翻譯成其他語言檔案
 
 
