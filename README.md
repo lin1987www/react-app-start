@@ -246,6 +246,7 @@ terser-webpack-plugin 產生最佳化壓縮後 js
 
     echo %NODE_ENV%
 
+
 ## 安裝 Babel
 [Babel](https://babeljs.io/docs/en/usage)
 [Try it out](https://babeljs.io/repl/build/master)
@@ -298,6 +299,7 @@ babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏�
 
     npm install --save-dev @babel/preset-react
     npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator
+
 
 ## 安裝 ESLint
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
@@ -381,6 +383,7 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
 
 [Enforce specifying rules to disable in eslint-disable comments](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/master/docs/rules/no-abusive-eslint-disable.md)
 
+
 ## [ESLint React](https://www.npmjs.com/package/eslint-plugin-react)
 
 eslint-plugin-react 用於檢查 react 的語法，修改 .eslintrc.js 新增 plugin:react/recommended 到 extends
@@ -432,6 +435,8 @@ babel-eslint 用於去除一些 react 語法解析上的問題
             "test:lint": "eslint . --ext .js,.jsx",
         }
     }
+ 
+ 
  
 ## 安裝 mocha 自動測試 跟 chai 測試語法
 
@@ -544,6 +549,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     Mocha Extra options: --require @babel/register
 
+
 ## 安裝 react
 
     npm install --save react react-dom prop-types
@@ -649,6 +655,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
             }),
         ],
     }
+
 
 ## 安裝 PostCss
 [PostCss](https://github.com/postcss/postcss)
@@ -774,9 +781,12 @@ stylelint-config-recommended 用於 stylielint 設定檔
         document.getElementById('root')
     );
     
+    
+    
 ## Redux 
 
     npm install --save redux react-redux
+
 
 ## redux-devtools-extension
 
@@ -801,6 +811,12 @@ stylelint-config-recommended 用於 stylielint 設定檔
         )
     );    
 
+
+## react-router-dom
+
+    npm install --save react-router-dom
+
+
 ## Redux Todo List
 
 
@@ -821,6 +837,7 @@ stylelint-config-recommended 用於 stylielint 設定檔
 新增指令參數
 
     mocha --require setupTests.js
+
 
 ## [enzyme_render_diffs](https://gist.github.com/fokusferit/e4558d384e4e9cab95d04e5f35d4f913)
 
@@ -884,6 +901,7 @@ Calls:
 
 - componentWillUnmount
 
+
 ### Render
 
 only calls render but renders all children.
@@ -903,6 +921,7 @@ I would really appreciate if you could give me the use cases you have for render
 I'm also curious to know why shallow does not call componentDidUpdate.
 
 Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726 this gist is basically a copy of the comment but I wanted to separate it from there as it includes a lot of general Enzyme information which is missing in the docs.
+
 
 ## [JSDOM + Mocha](https://github.com/airbnb/enzyme/blob/master/docs/guides/jsdom.md#jsdom--mocha)
 
@@ -941,6 +960,7 @@ Kudos goes to https://github.com/airbnb/enzyme/issues/465#issuecomment-227697726
 新增指令參數
 
     mocha --require setupTests.js
+
 
 ##  i18n
 
@@ -1251,6 +1271,7 @@ test:jest 使用 watch 模式開啟，進入模式後使用互動的方式(i)逐
     import './function.test';
     import './sinon.test';
 
+
 ## 設定瀏覽器支援 Browserlist
 
 [Browserlist](https://github.com/browserslist/browserslist)
@@ -1267,6 +1288,7 @@ test:jest 使用 watch 模式開啟，進入模式後使用互動的方式(i)逐
         "ie >= 8"
       ],
     }
+
 
 ## 額外問題
 
