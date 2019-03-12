@@ -557,6 +557,10 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
 ## Dynamic Import
 
+Webpack 限定版本為 4.28.x  4.29.6 不能正常解析 Dynamic Import
+
+根據 Mocha 的測試 跟 Webpack 編譯比較發現其實是 Webpack 產生的問題，Babel正常運作
+
     npm install --save-dev babel-plugin-dynamic-import-node babel-plugin-dynamic-import-webpack @babel/plugin-syntax-dynamic-import
 
 在 .babelrc.js 中新增檢測是否運行在 mocha 底下的簡易判動程式碼
