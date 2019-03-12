@@ -74,6 +74,8 @@ cross-env 用於跨平台設定環境變數
     const babel_presets = babelrc.presets;
     const babel_plugins = babelrc.plugins;
     
+    const eslintrc = require('./.eslintrc');
+    
     const isProd = process.env.NODE_ENV === 'production';
     
     const common = {
@@ -102,10 +104,11 @@ cross-env 用於跨平台設定環境變數
                     test: /\.jsx?$/,
                     exclude: /node_modules/,
                     loader: 'eslint-loader',
+                    options: eslintrc
                 },
                 {
                     test: /\.jsx?$/,
-                    include: [path.resolve(__dirname, 'src')],
+                    include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'test')],
                     loader: 'babel-loader',
                     options: {
                         // To avoid node_modules building failed at jsx
@@ -351,6 +354,8 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
 
     // webpack.config.js
+    
+    const eslintrc = require('./.eslintrc');
     module.exports = {
         // ...
         module: {
@@ -360,6 +365,7 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
                     test: /\.jsx?$/,
                     exclude: /node_modules/,
                     loader: 'eslint-loader',
+                    options: eslintrc
                 },
             ]
         }
@@ -432,12 +438,11 @@ babel-eslint 用於去除一些 react 語法解析上的問題
     // package.json
     {
         "scripts": {
-            "test:lint": "eslint . --ext .js,.jsx",
+            "test:lint": "eslint . --ext .js,.jsx --config .eslintrc.js",
         }
     }
- 
- 
- 
+
+
 ## 安裝 mocha 自動測試 跟 chai 測試語法
 
 [chai](https://www.chaijs.com/)
@@ -459,7 +464,7 @@ test/index.js 是測試檔案主體，可以引入其他測試檔案
 test/function.test.js 是測試部分 function 運作，在此只是範例
 
     // test/function.test.js
-    const {assert, expect, should} = require('chai');
+    const {assert, expect, should} = require('chai'); // eslint-disable-line no-unused-vars
 
     describe('Mocha Test', function () {
         describe('Basic', function () {
@@ -548,6 +553,29 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 注意指令中 --require @babel/register 是必須設定的額外參數，才能使得 IDE 執行時也能夠正常運作
 
     Mocha Extra options: --require @babel/register
+
+
+## Dynamic Import
+
+    npm install --save-dev babel-plugin-dynamic-import-node babel-plugin-dynamic-import-webpack @babel/plugin-syntax-dynamic-import
+
+在 .babelrc.js 中新增檢測是否運行在 mocha 底下的簡易判動程式碼
+
+    const isMochaRunning = process.argv.findIndex(arg => arg.indexOf('mocha') > -1) > -1;
+        
+    let plugins = [
+        isMochaRunning ? 'dynamic-import-node' : 'dynamic-import-webpack',
+        '@babel/plugin-syntax-dynamic-import',
+    ];
+
+@babel/plugin-syntax-dynamic-import 用於內容開頭的宣告 import  from 的使用方式
+
+而 dynamic-import-node 跟 dynamic-import-webpack 用於 當function時使用
+
+dynamic-import-node 用於 mocha 執行測試時的 node 環境 
+
+dynamic-import-webpack 用於 webpack 編譯時使用
+
 
 
 ## 安裝 react
@@ -659,6 +687,8 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
 ## 安裝 PostCss
 [PostCss](https://github.com/postcss/postcss)
+
+WebStorm 可以啟動 PostCss plugin 外掛
 
     npm install --save postcss-import
     npm install --save-dev style-loader css-loader postcss-loader postcss-cli postcss-safe-parser stylelint stylelint-webpack-plugin stylelint-config-recommended autoprefixer precss
@@ -780,9 +810,8 @@ stylelint-config-recommended 用於 stylielint 設定檔
         <HelloWorld name="world!" /> ,
         document.getElementById('root')
     );
-    
-    
-    
+
+
 ## Redux 
 
     npm install --save redux react-redux
@@ -818,8 +847,6 @@ stylelint-config-recommended 用於 stylielint 設定檔
 
 
 ## Redux Todo List
-
-
 
 
 ##  enzyme
@@ -1143,7 +1170,7 @@ test:jest 使用 watch 模式開啟，進入模式後使用互動的方式(i)逐
 
 建立 test/sinon.test.js
     
-    import {assert, expect, should} from 'chai';
+    import {assert, expect, should} from 'chai'; // eslint-disable-line no-unused-vars
     import sinon from 'sinon';
     
     describe('Sinon', () => {

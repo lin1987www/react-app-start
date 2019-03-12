@@ -22,7 +22,10 @@ describe('Sinon', () => {
         it('test should stub method differently based on arguments', function () {
             // Test stubs are functions (spies) with pre-programmed behavior.
             let api = {method: () => 0};
-            let callback = sinon.stub(api, 'method').callsFake(() => 2);
+            let callback = sinon.stub(api, 'method').callsFake(() => {
+                console.log(arguments);
+                return 2;
+            });
             callback.withArgs(42).returns(1);
             callback.withArgs(1).throws(new Error('name'));
 

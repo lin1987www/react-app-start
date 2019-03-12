@@ -13,6 +13,8 @@ const babelrc = require('./.babelrc');
 const babel_presets = babelrc.presets;
 const babel_plugins = babelrc.plugins;
 
+const eslintrc = require('./.eslintrc');
+
 const isProd = process.env.NODE_ENV === 'production';
 
 const common = {
@@ -41,10 +43,11 @@ const common = {
                 test: /\.jsx?$/,
                 exclude: /node_modules/,
                 loader: 'eslint-loader',
+                options: eslintrc
             },
             {
                 test: /\.jsx?$/,
-                include: [path.resolve(__dirname, 'src')],
+                include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'test')],
                 loader: 'babel-loader',
                 options: {
                     // To avoid node_modules building failed at jsx
