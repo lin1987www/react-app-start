@@ -565,7 +565,8 @@ Webpack 限定版本為 4.28.x  4.29.6 不能正常解析 Dynamic Import
 
 在 .babelrc.js 中新增檢測是否運行在 mocha 底下的簡易判動程式碼
 
-    const isMochaRunning = process.argv.findIndex(arg => arg.indexOf('mocha') > -1) > -1;
+    const _MOCHA_PATH = new RegExp('(\\\\|/)node_modules\\1mocha\\1bin\\1_mocha$');
+    const isMochaRunning = process.argv.findIndex(arg => _MOCHA_PATH.test(arg)) > -1;
         
     let plugins = [
         isMochaRunning ? 'dynamic-import-node' : 'dynamic-import-webpack',

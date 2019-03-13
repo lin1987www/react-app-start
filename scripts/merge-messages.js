@@ -1,5 +1,5 @@
 const fs = require('fs');
-const path = require('path');
+const path = require('path').posix;
 
 let args = process.argv.slice(2);
 

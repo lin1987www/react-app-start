@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const glob = require('glob');
-const path = require('path');
+const path = require('path').posix;
 const mkdirp = require('mkdirp');
 
 var args = process.argv.slice(2);

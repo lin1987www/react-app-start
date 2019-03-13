@@ -1,4 +1,9 @@
 import {assert, expect, should} from 'chai'; // eslint-disable-line no-unused-vars
+const path = require('path').posix;
+
+import foo from './foo';
+import * as barResult from './bar';
+import bar, {a as barA, b as barB} from './bar';
 
 describe('ES6', () => {
     describe('Destructuring assignment', () => {
@@ -73,10 +78,21 @@ describe('ES6', () => {
         it('Import', () => {
             function dynamicImport() {
                 import(/* webpackChunkName: "foo" */'./foo').then(result => {
-                    assert.deepEqual(result.default, 'foo');
-                    console.log('\n Dynamic import', result.default);
+                    expect(result.default).to.deep.equal('foo');
+                    expect(result.default).to.deep.equal(foo);
+                });
+
+                import(/* webpackChunkName: "bar" */'./bar').then(result => {
+                    expect(result).to.deep.equal(barResult);
+                    expect(result.default).to.deep.equal(bar);
+                    expect(result.a).to.deep.equal(barA);
+                    expect(result.b).to.deep.equal(barB);
                 });
             }
+
+            const _MOCHA_PATH = new RegExp('(\\\\|/)node_modules\\1mocha\\1bin\\1_mocha$');
+            var isMochaRunning = process.argv.findIndex(arg => _MOCHA_PATH.test(arg)) > -1;
+            console.log('\n isMochaRunning', isMochaRunning, '\n');
 
             dynamicImport();
         });
