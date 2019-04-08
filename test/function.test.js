@@ -26,5 +26,16 @@ describe('Mocha Test', function () {
             };
             func.call(555);
         });
+        it('Promise', function () {
+            const promise = new Promise((resolve, reject) => {
+                resolve('\n resolve 1');
+                resolve('\n resolve 2');
+                reject('\n reject 1');
+                reject('\n reject 2');
+            });
+            promise.then(console.log).catch(console.log);
+            promise.then(console.log).catch(console.log);
+            promise.always(console.log);
+        });
     });
 });

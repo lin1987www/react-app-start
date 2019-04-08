@@ -285,6 +285,7 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
                             '@babel/plugin-proposal-export-default-from',
                             '@babel/plugin-proposal-export-namespace-from',
                             '@babel/plugin-transform-async-to-generator',
+                            '@babel/plugin-transform-runtime'
                         ],
                     },
                 },
@@ -301,7 +302,7 @@ babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏�
 其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
 
     npm install --save-dev @babel/preset-react
-    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator
+    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator @babel/plugin-transform-runtime
 
 
 ## 安裝 ESLint
@@ -687,6 +688,25 @@ dynamic-import-webpack 用於 webpack 編譯時使用
                 filename: 'index.html',
             }),
         ],
+    }
+
+
+## React Hook
+
+    npm install --save-dev eslint-plugin-react-hooks 
+
+Then add it to your ESLint configuration:
+
+    {
+      "plugins": [
+        // ...
+        "react-hooks"
+      ],
+      "rules": {
+        // ...
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn"
+      }
     }
 
 

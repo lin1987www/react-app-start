@@ -127,6 +127,8 @@ const config = merge(base, {
         'todo_list': ['./src/web/todo_list.jsx'],
         'hi_i18n': ['./src/web/hi_i18n.jsx'],
         'browser_router': ['./src/web/browser_router.jsx'],
+        'ref': ['./src/web/ref.jsx'],
+        'hook': ['./src/web/hook.jsx'],
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -159,6 +161,18 @@ const config = merge(base, {
             title: 'browser_router',
             chunks: ['lib.min', 'browser_router'],
             filename: 'browser_router.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: 'body',
+            title: 'Ref',
+            chunks: ['lib.min', 'ref'],
+            filename: 'ref.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: 'body',
+            title: 'Hook',
+            chunks: ['lib.min', 'hook'],
+            filename: 'hook.html',
         }),
     ],
 });

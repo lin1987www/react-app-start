@@ -1,0 +1,27 @@
+
+execute result
+{
+    status: pending, fulfilled, rejected
+    error:
+    result:
+    startTime:
+    endTime:
+}
+
+executor
+{
+    result: execute result
+    func:
+
+    timeout:
+    cancel:
+
+    cacheTime:
+
+    * retryHandler:
+    retryCount:
+    retryLimit:
+    retryInterval:
+}
+
+分開只是為了 JSON 時方便  但是想想 JSON 字串化的時候 應該有對應的 method ?

@@ -15,11 +15,13 @@ const getVisibleTodos = (todos, filter) => {
     }
 };
 
-const mapStateToProps = (state) => ({
+// eslint-disable-next-line no-unused-vars
+const mapStateToProps = (state, ownProps) => ({
     todos: getVisibleTodos(state.todos, state.visibilityFilter)
 });
 
-const mapDispatchToProps = (dispatch) => ({
+// eslint-disable-next-line no-unused-vars
+const mapDispatchToProps = (dispatch, ownProps) => ({
     toggleTodo: id => dispatch(toggleTodo(id))
 });
 

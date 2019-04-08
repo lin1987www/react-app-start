@@ -25,7 +25,12 @@ module.exports = {
             'forbidExtraProps',
         ]
     },
+    'plugins': [
+        'react-hooks'
+    ],
     'rules': {
+        'react-hooks/rules-of-hooks': 'error',
+        'react-hooks/exhaustive-deps': 'warn',
         'no-console': [
             'off',
             {allow: ["warn", "error"]}
