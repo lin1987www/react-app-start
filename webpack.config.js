@@ -129,6 +129,7 @@ const config = merge(base, {
         'browser_router': ['./src/web/browser_router.jsx'],
         'ref': ['./src/web/ref.jsx'],
         'hook': ['./src/web/hook.jsx'],
+        'hook_in_class': ['./src/web/hook_in_class.jsx'],
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -173,6 +174,12 @@ const config = merge(base, {
             title: 'Hook',
             chunks: ['lib.min', 'hook'],
             filename: 'hook.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: 'body',
+            title: 'Hook in class',
+            chunks: ['lib.min', 'hook_in_class'],
+            filename: 'hook_in_class.html',
         }),
     ],
 });

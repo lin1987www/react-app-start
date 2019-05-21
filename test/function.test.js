@@ -26,16 +26,25 @@ describe('Mocha Test', function () {
             };
             func.call(555);
         });
-        it('Promise', function () {
+        it('Promise Callback', function (done) {
             const promise = new Promise((resolve, reject) => {
-                resolve('\n resolve 1');
-                resolve('\n resolve 2');
-                reject('\n reject 1');
-                reject('\n reject 2');
+                resolve(200);
+                resolve(202);
+                reject(404);
+                reject(500);
             });
-            promise.then(console.log).catch(console.log);
-            promise.then(console.log).catch(console.log);
-            promise.always(console.log);
+
+            function returnValue(value) {
+                return value;
+            }
+
+            Promise.all([
+                promise.then(returnValue).catch(console.log),
+                promise.then(returnValue).catch(console.log)
+            ]).then(values => {
+                expect(values).to.deep.equal([200, 200]);
+                done();
+            });
         });
     });
 });
