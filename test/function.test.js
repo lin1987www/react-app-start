@@ -46,5 +46,39 @@ describe('Mocha Test', function () {
                 done();
             });
         });
+        it('Prototype', function () {
+            function FunctionArray() {
+                let instance = this;
+                const prototype = Object.getPrototypeOf(this);
+                const superPrototype = Object.getPrototypeOf(prototype);
+                const superConstructor = superPrototype.constructor;
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/new
+                instance = superConstructor.apply(instance, arguments) || instance;
+                Object.setPrototypeOf(instance, prototype);
+                // Using bind
+                // https://github.com/facebook/react/issues/9851
+                instance.push = instance.push.bind(instance);
+                return instance;
+            }
+
+            Object.setPrototypeOf(FunctionArray, Array);
+            Object.setPrototypeOf(FunctionArray.prototype, Array.prototype);
+            FunctionArray.prototype.push = function () {
+                // arguments is an Array-like object
+                // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
+                const args = [];
+                for (let i = 0; i < arguments.length; i++) {
+                    args.push(arguments[i]);
+                }
+                const superPrototype = Object.getPrototypeOf(FunctionArray.prototype);
+                superPrototype.push.apply(this, args.filter((arg) => (typeof arg === 'function')));
+            };
+            const fnArray = new FunctionArray();
+            fnArray.push(123);
+            expect(fnArray).to.deep.equal([]);
+            fnArray.push(FunctionArray);
+            expect(fnArray).to.deep.equal([FunctionArray]);
+            assert.equal(fnArray.length, 1);
+        });
     });
 });
