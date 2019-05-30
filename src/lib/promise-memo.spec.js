@@ -1,4 +1,5 @@
 const {assert, expect, should} = require('chai');
+import {it, describe} from 'mocha';
 import PromiseMemo, {Caller, Handler, CallerPool} from "./promise-memo";
 
 console.log('\n\n');
@@ -149,8 +150,12 @@ describe('Promise memo Test', function () {
         const executor1 = (resolve, reject, config) => {
             if (config) {
                 config.cacheMs = cacheMs;
-                config.retry = (config.retryTimes < 2);
             }
+
+            config.retry = () => {
+                return (config.retryTimes < 2);
+            };
+
             const result = plus1(0);
             setTimeout(() => resolve(result), executingMs);
         };

@@ -1,9 +1,19 @@
+/*
+    new PromiseMemo(
+        fn:function,
+        dependencies?:Array<any>,
+        config?:{
+            cacheMs?: number,
+            retry?: boolean|function(error:any) ,
+            retryInterval?: number,
+        }
+    )
+*/
 const Caller = (function () {
-    function isFunction(functionToCheck) {
-        return functionToCheck && {}.toString.call(functionToCheck) === '[object Function]';
-    }
-
     function Caller(callback) {
+        if (!(this instanceof Caller)) {
+            throw new Error("Instantiate Caller with `new` keyword");
+        }
         this.callback = callback;
         this.callee = null;
         //
@@ -21,36 +31,37 @@ const Caller = (function () {
             if (Promise.resolve(value) === value) {
                 // If returned value is a Promise
                 const promise = value;
-                promise.then(setResult, setResult).catch(catchError);
+                promise.then(setResult, catchError);
                 return;
             }
             if (state === Caller.STATE_IDLE) {
                 throw Error("Already call setResult!");
             }
-            result = value;
             state = Caller.STATE_IDLE;
+            result = value;
             this.callback && this.callback(result);
         };
         //
         this.execute = (callee) => {
-            if (!isFunction(callee)) {
+            if (!(callee instanceof Function)) {
                 return;
             }
             if (state === Caller.STATE_EXECUTING) {
                 throw Error("Already call execute!");
             }
-            this.callee = callee;
             state = Caller.STATE_EXECUTING;
-            try {
-                if (callee.length > 0) {
-                    // We presume callee is promise executor function
-                    const promise = new Promise(callee);
-                    setResult(promise);
-                } else {
+            this.callee = callee;
+
+            if (callee.length > 0) {
+                // We presume callee is promise executor function
+                const promise = new Promise(callee);
+                setResult(promise);
+            } else {
+                try {
                     setResult(callee());
+                } catch (e) {
+                    catchError(e);
                 }
-            } catch (e) {
-                catchError(e);
             }
         };
     }
@@ -63,6 +74,9 @@ const Caller = (function () {
 
 const Handler = (function () {
     function Handler() {
+        if (!(this instanceof Handler)) {
+            throw new Error("Instantiate Handler with `new` keyword");
+        }
         const fns = new Array();
         const caller = new Caller();
 
@@ -86,6 +100,9 @@ const Handler = (function () {
 
 const CallerPool = (function () {
     function CallerPool(size) {
+        if (!(this instanceof CallerPool)) {
+            throw new Error("Instantiate CallerPool with `new` keyword");
+        }
         size = size || 1;
         const handler = new Handler();
         const callers = new Array(size);
@@ -113,7 +130,7 @@ const CallerPool = (function () {
 
 const PromiseMemo = (function () {
     const memoRoot = {};
-    // 暫時用字串
+
     const memoSymbol = Symbol.for('memo');
 
     const defaultConfig = {
@@ -158,7 +175,7 @@ const PromiseMemo = (function () {
         };
 
         const delegateReject = (reason) => {
-            if (config.retry) {
+            if ((config.retry instanceof Function) ? config.retry(reason) : config.retry) {
                 config.retryTimes += 1;
                 setTimeout(executeImpl, config.retryInterval);
             } else {
@@ -190,6 +207,9 @@ const PromiseMemo = (function () {
     }
 
     function PromiseMemo(fn, dependencies, config) {
+        if (!(this instanceof PromiseMemo)) {
+            throw new Error("Instantiate PromiseMemo with `new` keyword");
+        }
         dependencies = dependencies || [];
         config = config || {};
         const configMerge = Object.assign({}, defaultConfig, config);

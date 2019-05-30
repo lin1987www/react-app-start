@@ -178,5 +178,26 @@ describe('Mocha Test', function () {
             });
             setTimeout(done, 600);
         });
+        it('Promise then onFulfilled throw error handle', function (done) {
+            let sum = 0;
+            let p1 = new Promise(() => {
+                // When throw error , we need have someone to handle error, or system will print warning
+                throw 404;
+            }).then((value) => {
+                // Didn't called
+            }, (reason) => {
+                sum += 404;
+                assert.equal(sum, 404);
+            }).catch((error) => {
+                // Already handle by onRejected which is then method's second parameter
+            }).then((value) => {
+                assert.equal(sum, 404);
+                assert.equal(value, undefined);
+                done();
+            }).then((value) => {
+                assert.equal(sum, 404);
+                assert.equal(value, undefined);
+            });
+        });
     });
 });
