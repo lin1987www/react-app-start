@@ -1,13 +1,15 @@
 /*
-    new PromiseMemo(
-        fn:function,
+    let promise = new PromiseMemo(
+        fn:function(resolve?:function, reject?:function, config?):?promise,
         dependencies?:Array<any>,
-        config?:{
-            cacheMs?: number,
-            retry?: boolean|function(error:any) ,
-            retryInterval?: number,
-        }
-    )
+        config?:Object
+    );
+
+    config:{
+        cacheMs?: number,
+        retry?: boolean|function(error:any):boolean ,
+        retryInterval?: number,
+    }
 */
 const Caller = (function () {
     function Caller(callback) {
