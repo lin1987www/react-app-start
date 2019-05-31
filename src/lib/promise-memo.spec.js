@@ -151,15 +151,15 @@ describe('Promise memo Test', function () {
             if (config) {
                 config.cacheMs = cacheMs;
             }
-
-            config.retry = () => {
-                return (config.retryTimes < 2);
-            };
-
             const result = plus1(0);
             setTimeout(() => resolve(result), executingMs);
         };
-        const p1 = new PromiseMemo(executor1, [plus1, 0]);
+        const p1 = new PromiseMemo(executor1, [plus1, 0], {
+            retry: (reason, config) => {
+                assert.equal(reason,'Error');
+                return (config.retryTimes < 2);
+            }
+        });
         p1.then((value) => {
             assert.equal(value, 4);
             assert.equal(countOfCalled, 3);
