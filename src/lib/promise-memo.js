@@ -7,7 +7,7 @@
 
     config:{
         cacheMs?: number,
-        retry?: boolean|function(reason:any, config):boolean ,
+        retry?: boolean|function(reason:any, config):boolean|Number ,
         retryInterval?: number,
     }
 */
@@ -177,7 +177,12 @@ const PromiseMemo = (function () {
         };
 
         const delegateReject = (reason) => {
-            if ((config.retry instanceof Function) ? config.retry(reason, config) : config.retry) {
+            if ((config.retry instanceof Function) ?
+                config.retry(reason, config) :
+                Number.isInteger(config.retry) ?
+                    (config.retry-- > 0) :
+                    config.retry
+            ) {
                 config.retryTimes += 1;
                 setTimeout(executeImpl, config.retryInterval);
             } else {

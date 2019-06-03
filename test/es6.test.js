@@ -96,5 +96,24 @@ describe('ES6', () => {
 
             dynamicImport();
         });
+        it('Object.assign', () => {
+            const defaultConfig = {a: 0, b: 0, c: 0};
+            const outsideConfig = {a: 1};
+
+            function func(config) {
+                const mergeConfig = Object.assign({}, defaultConfig, config);
+                Object.assign(config, mergeConfig);
+                assert.equal(outsideConfig, config);
+            }
+
+            func(outsideConfig);
+        });
+        it('Object.assign bind', () => {
+
+            const o1 = {a: 1};
+            const o2 = {b: 2};
+            const o3 = Object.assign(o1, o2);
+            assert.equal(o1, o3);
+        });
     });
 });
