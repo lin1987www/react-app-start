@@ -7,7 +7,7 @@
 
     config:{
         cacheMs?: number,
-        retry?: boolean|function(reason:any, config):boolean|Number ,
+        retry?: boolean|function(reason:any, config):boolean|number ,
         retryInterval?: number,
     }
 */
