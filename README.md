@@ -555,6 +555,10 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     Mocha Extra options: --require @babel/register
 
+另外也可以指定其測試時預設 timeout 時間
+
+    Mocha Extra options: --timeout 5000
+
 
 ## Dynamic Import
 
