@@ -42,6 +42,7 @@ node_modules包含兩種:
         "files": [
             "src",
             "test",
+            "translations",
             "*.js",
             ".eslintignore",
             ".travis.yml"

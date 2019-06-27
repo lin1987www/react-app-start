@@ -1,0 +1,6 @@
+[
+  {
+    "id": "src.components.greeting",
+    "defaultMessage": "Hi, \\{{name}\\}"
+  }
+]

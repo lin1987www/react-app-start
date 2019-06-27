@@ -25,6 +25,7 @@
   "files": [
     "src",
     "test",
+    "translations",
     "*.js",
     ".eslintignore",
     ".travis.yml"
