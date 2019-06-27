@@ -271,7 +271,8 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
                                 '@babel/preset-env',
                                 {
                                     debug: true,
-                                    useBuiltIns: 'entry', // 使用 babel 的 polyfill
+                                    useBuiltIns: 'usage', // 使用 babel 的 polyfill
+                                    corejs: '2',
                                 }
                             ],
                             '@babel/preset-react'
@@ -293,10 +294,10 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
         }
     }
 
-babel-loader, @babel/preset-env 和 @babel/polyfill 用於整合 webpack 使瀏覽器支援 ES, React, TypeScript 語法
+babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webpack 使瀏覽器支援 ES, React 語法
 
     npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
-    npm install --save @babel/polyfill
+    npm install --save @babel/polyfill core-js@2
 
 @babel/preset-react 用於編譯 React 的 .jsx 檔案
 其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
@@ -532,7 +533,8 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
             '@babel/preset-env',
             {
                 debug: true,
-                useBuiltIns: 'entry', // 使用 babel 的 polyfill
+                useBuiltIns: 'usage', // 使用 babel 的 polyfill
+                corejs: '2',
             }
         ],
         '@babel/preset-react'
@@ -564,28 +566,23 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
 Webpack 限定版本為 4.28.x  4.29.6 不能正常解析 Dynamic Import
 
-根據 Mocha 的測試 跟 Webpack 編譯比較發現其實是 Webpack 產生的問題，Babel正常運作
+    npm install --save-dev babel-plugin-dynamic-import-node @babel/plugin-syntax-dynamic-import
 
-    npm install --save-dev babel-plugin-dynamic-import-node babel-plugin-dynamic-import-webpack @babel/plugin-syntax-dynamic-import
-
-在 .babelrc.js 中新增檢測是否運行在 mocha 底下的簡易判動程式碼
+    let plugins = [
+        ...
+        '@babel/plugin-syntax-dynamic-import',
+        ...
+    ];
 
     const _MOCHA_PATH = new RegExp('(\\\\|/)node_modules\\1mocha\\1bin\\1_mocha$');
     const isMochaRunning = process.argv.findIndex(arg => _MOCHA_PATH.test(arg)) > -1;
-        
-    let plugins = [
-        isMochaRunning ? 'dynamic-import-node' : 'dynamic-import-webpack',
-        '@babel/plugin-syntax-dynamic-import',
-    ];
+    if (isMochaRunning) {
+        plugins.push('dynamic-import-node');
+    }
+    
+@babel/plugin-syntax-dynamic-import 用於內容開頭的宣告 import foo from 'foo'; 的使用方式 和 import()， Babel 7.4.0 已整合在 @babel/preset-env
 
-@babel/plugin-syntax-dynamic-import 用於內容開頭的宣告 import  from 的使用方式
-
-而 dynamic-import-node 跟 dynamic-import-webpack 用於 當function時使用
-
-dynamic-import-node 用於 mocha 執行測試時的 node 環境 
-
-dynamic-import-webpack 用於 webpack 編譯時使用
-
+dynamic-import-node 用於 mocha 執行測試時的 node 環境 import() 
 
 
 ## 安裝 react
