@@ -311,7 +311,7 @@ babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webp
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
 
     // --save-dev 跟 -D 都是一樣的option  會修改到 package.json 檔案中
-    npm install --save-dev eslint eslint-loader eslint-plugin-react babel-eslint
+    npm install --save-dev eslint eslint-loader eslint-plugin-react babel-eslint eslint-plugin-import
         
 /node_modules/.bin包含了所有可以執行的package指令        
         
@@ -392,6 +392,13 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
 
 [Enforce specifying rules to disable in eslint-disable comments](https://github.com/sindresorhus/eslint-plugin-unicorn/blob/master/docs/rules/no-abusive-eslint-disable.md)
 
+### [eslint-plugin-import](https://www.npmjs.com/package/eslint-plugin-import)
+
+eslint-plugin-import 用於檢查 import 的語法是否正確
+
+修改 .eslintrc.js 新增 plugin:import/errors 跟 plugin:import/warnings 到 extends
+
+.eslintrc.js 結構中 extends 是預設的規則，而若要自行設定規則則需要設定 .eslintrc.js 結構中 plugins 
 
 ## [ESLint React](https://www.npmjs.com/package/eslint-plugin-react)
 
@@ -441,10 +448,14 @@ babel-eslint 用於去除一些 react 語法解析上的問題
     // package.json
     {
         "scripts": {
-            "test:lint": "eslint . --ext .js,.jsx --config .eslintrc.js",
+            "test:lint": "eslint . --ext .js,.jsx",
         }
     }
 
+注意如果有設定檔，則規則不會被自動被子目錄的規則複寫，因此不建議指定設定檔 
+    
+     "test:lint": "eslint . --ext .js,.jsx --config .eslintrc.js",
+     
 
 ## 安裝 mocha 自動測試 跟 chai 測試語法
 

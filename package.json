@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "npm run test:lint && npm run test:mocha && npm run test:css",
-    "test:lint": "eslint . --ext .js,.jsx --config .eslintrc.js",
+    "test:lint": "eslint . --ext .js,.jsx",
     "test:mocha": "mocha --require @babel/register ./test/index.js src/**/*.spec.js src/**/*.spec.jsx",
     "test:css": "stylelint src/**/*.css src/**/*.scss",
     "test:jest": "jest __test__ --no-cache --watch",
@@ -69,6 +69,7 @@
     "enzyme-adapter-react-16": "^1.14.0",
     "eslint": "^5.16.0",
     "eslint-loader": "^2.1.2",
+    "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-react-hooks": "^1.6.1",
     "html-loader": "^0.5.5",

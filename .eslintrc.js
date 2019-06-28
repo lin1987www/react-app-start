@@ -7,7 +7,12 @@ module.exports = {
         'node': true,
         'mocha': true,
     },
-    'extends': ['eslint:recommended', 'plugin:react/recommended'],
+    'extends': [
+        'eslint:recommended',
+        'plugin:react/recommended',
+        'plugin:import/errors',
+        'plugin:import/warnings',
+    ],
     'parserOptions': {
         'ecmaFeatures': {
             'jsx': true
