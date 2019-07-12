@@ -9,6 +9,7 @@
         cacheMs?: number,
         retry?: boolean|function(reason:any, config):boolean|number ,
         retryInterval?: number,
+        callerPool?: callerPool,
     }
 */
 const Caller = (function () {
@@ -43,7 +44,9 @@ const Caller = (function () {
             result = value;
             this.callback && this.callback(result);
         };
-        //
+        //  execute :: callee -> undefined
+        //      callee :: () -> result
+        //      callee :: (resolve, reject) -> undefined
         this.execute = (callee) => {
             if (!(callee instanceof Function)) {
                 return;
@@ -135,10 +138,12 @@ const PromiseMemo = (function () {
 
     const memoSymbol = Symbol.for('memo');
 
-    const defaultConfig = {
+    let defaultConfig = {
         cacheMs: 0,
         retry: false,
         retryInterval: 0,
+        callerPool: null,
+        // Information properties
         retryTimes: 0,
     };
 
@@ -207,7 +212,8 @@ const PromiseMemo = (function () {
         if (!memo.isExecuting && Date.now() > memo.expiresMs) {
             memo.isExecuting = true;
             memo.lastPromise = new Promise((resolve, reject) => {
-                defaultCallerPool.post(executorImpl.bind(null, resolve, reject, fn, config, memo));
+                const callerPool = config.callerPool || defaultCallerPool;
+                callerPool.post(executorImpl.bind(null, resolve, reject, fn, config, memo));
             });
         }
         memo.lastPromise.then(resolve, reject);
@@ -216,6 +222,9 @@ const PromiseMemo = (function () {
     function PromiseMemo(fn, dependencies, config) {
         if (!(this instanceof PromiseMemo)) {
             throw new Error("Instantiate PromiseMemo with `new` keyword");
+        }
+        if (!Array.isArray(dependencies)) {
+            throw new Error("The dependencies that second parameter of PromiseMemo must be a Array.");
         }
         dependencies = dependencies || [];
         config = config || {};
@@ -229,8 +238,14 @@ const PromiseMemo = (function () {
         return promise;
     }
 
-    PromiseMemo.setDefaultCallerPool = (callerPool) => {
-        this.defaultCallerPool = callerPool;
+    PromiseMemo.getDefaultCallerPool = () => defaultCallerPool;
+    PromiseMemo.setDefaultCallerPool = (value) => {
+        defaultCallerPool = value;
+    };
+
+    PromiseMemo.getDefaultConfig = () => defaultConfig;
+    PromiseMemo.setDefaultConfig = (value) => {
+        defaultConfig = value;
     };
 
     PromiseMemo.getMemo = getMemo;
