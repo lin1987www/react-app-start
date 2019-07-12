@@ -196,15 +196,16 @@ const PromiseMemo = (function () {
             }
         };
 
+        // Return promise for waiting callback
         function executeImpl() {
             // To make sure the result is not promise, so we wrap fn with a Promise, then we handle the final result
             const promise = new Promise((resolve, reject) => {
                 fn(resolve, reject, config);
             });
-            promise.then(delegateResolve, delegateReject);
+            return promise.then(delegateResolve, delegateReject);
         }
 
-        executeImpl();
+        return executeImpl();
     }
 
     function execute(resolve, reject, fn, dependencies, config) {
@@ -213,7 +214,8 @@ const PromiseMemo = (function () {
             memo.isExecuting = true;
             memo.lastPromise = new Promise((resolve, reject) => {
                 const callerPool = config.callerPool || defaultCallerPool;
-                callerPool.post(executorImpl.bind(null, resolve, reject, fn, config, memo));
+                const callee = executorImpl.bind(null, resolve, reject, fn, config, memo);
+                callerPool.post(callee);
             });
         }
         memo.lastPromise.then(resolve, reject);
