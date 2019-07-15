@@ -155,22 +155,26 @@ const PromiseMemo = (function () {
         return {
             isExecuting: false,
             expiresMs: 0,
-            lastPromise: null
+            lastPromise: null,
+            dependencies: null
         };
     }
 
     function getMemo(dependencies) {
+        let memo = null;
         if (!dependencies || dependencies.length == 0) {
-            return newMemo();
+            memo = newMemo();
+        } else {
+            let memoNode = memoRoot;
+            for (let i = 0; i < dependencies.length; i++) {
+                const key = dependencies[i];
+                memoNode[key] = memoNode[key] || {};
+                memoNode = memoNode[key];
+            }
+            memoNode[memoSymbol] = memoNode[memoSymbol] || newMemo();
+            memo = memoNode[memoSymbol];
         }
-        let memoNode = memoRoot;
-        for (let i = 0; i < dependencies.length; i++) {
-            const key = dependencies[i];
-            memoNode[key] = memoNode[key] || {};
-            memoNode = memoNode[key];
-        }
-        memoNode[memoSymbol] = memoNode[memoSymbol] || newMemo();
-        let memo = memoNode[memoSymbol];
+        memo.dependencies = dependencies.slice();
         return memo;
     }
 
