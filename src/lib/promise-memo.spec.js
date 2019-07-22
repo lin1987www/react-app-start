@@ -1,5 +1,5 @@
 const {assert, expect, should} = require('chai'); // eslint-disable-line no-unused-vars
-import PromiseMemo, {Caller, Handler, CallerPool} from "./promise-memo";
+import PromiseMemo, {Caller, Handler, CallerPool, FlexibleCallerPool} from "./promise-memo";
 
 console.log('\n\n'); // eslint-disable-line no-console
 
@@ -97,6 +97,55 @@ describe('PromiseMemo Test', function () {
             })
         );
     });
+    it('FlexibleCallerPool', function (done) {
+        const faster = 0;
+        const threshold = 20;
+        const slower = 40;
+        const callerPool = new FlexibleCallerPool(1, threshold);
+
+        function logState(msg = '') {
+            const {idleCount, executingCount, pausedCount, callers, fns} = callerPool.getState();
+            console.log(`fns: ${fns.length} callers: ${callers.length} idle: ${idleCount} paused: ${pausedCount} executing: ${executingCount} ${msg}`); // eslint-disable-line no-console
+        }
+
+        function task(ms) {
+            return new PromiseMemo((resolve) => {
+                setTimeout(() => {
+                    logState();
+                    resolve();
+                }, ms);
+            }, [], {callerPool: callerPool});
+        }
+
+        for (let i = 0; i < 100; i++) {
+            if (i < 10) {
+                task(faster);
+            } else if (i < 20) {
+                task(slower);
+            } else if (i < 30) {
+                task(faster);
+            } else if (i < 40) {
+                task(slower);
+            } else if (i < 50) {
+                task(faster);
+            } else {
+                task(slower);
+            }
+        }
+
+        function finalTask(ms) {
+            return new PromiseMemo((resolve) => {
+                setTimeout(() => {
+                    logState('Final');
+                    resolve();
+                    done();
+                }, ms);
+            }, [], {callerPool: callerPool});
+        }
+
+        finalTask(faster);
+    });
+
 
     it('PromiseMemo.cache', function (done) {
         const cacheMs = 200;
@@ -223,4 +272,5 @@ describe('PromiseMemo Test', function () {
             done();
         });
     });
+
 });
