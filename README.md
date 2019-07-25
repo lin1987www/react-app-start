@@ -287,7 +287,8 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
                             '@babel/plugin-proposal-export-default-from',
                             '@babel/plugin-proposal-export-namespace-from',
                             '@babel/plugin-transform-async-to-generator',
-                            '@babel/plugin-transform-runtime'
+                            '@babel/plugin-transform-runtime',
+                            '@babel/plugin-proposal-optional-chaining',
                         ],
                     },
                 },
@@ -296,6 +297,7 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
     }
 
 babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webpack 使瀏覽器支援 ES, React 語法
+@babel/plugin-proposal-optional-chaining 使得支援  obj?.foo?.bar?.baz;  ?. 語法
 
     npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
     npm install --save @babel/polyfill core-js@2
@@ -304,7 +306,7 @@ babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webp
 其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
 
     npm install --save-dev @babel/preset-react
-    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator @babel/plugin-transform-runtime
+    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator @babel/plugin-transform-runtime @babel/plugin-proposal-optional-chaining
 
 
 ## 安裝 ESLint
@@ -561,6 +563,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-export-namespace-from',
         '@babel/plugin-transform-async-to-generator',
+        '@babel/plugin-proposal-optional-chaining',
     ];
 
     module.exports = {presets, plugins};

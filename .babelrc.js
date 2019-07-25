@@ -21,6 +21,7 @@ let plugins = [
     '@babel/plugin-transform-async-to-generator',
     '@babel/plugin-transform-runtime',
     '@babel/plugin-transform-arrow-functions',
+    '@babel/plugin-proposal-optional-chaining',
     ['react-intl-auto', {
         'removePrefix': 'app/'
     }],

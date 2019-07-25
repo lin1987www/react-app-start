@@ -199,5 +199,18 @@ describe('Mocha Test', function () {
                 assert.equal(value, undefined);
             });
         });
+        it('Accessing deeply nested properties',function () {
+            const obj = {
+                foo: {
+                    bar: {
+                        baz: 42,
+                    },
+                },
+            };
+            const baz = obj?.foo?.bar?.baz; // 42
+            const safe = obj?.qux?.baz; // undefined
+            assert.equal(true, baz === 42);
+            assert.equal(true, safe === undefined);
+        });
     });
 });
