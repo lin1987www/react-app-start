@@ -53,9 +53,11 @@ node_modules包含兩種:
 ## 安裝 webpack
 [webpack](https://webpack.js.org/guides/installation/)
 
-    npm install --save-dev webpack webpack-cli cross-env
+    npm install --save-dev webpack webpack-cli @webpack-cli/init cross-env dotenv
 
-cross-env 用於跨平台設定環境變數
+cross-env dotenv @webpack-cli/init 可用於跨平台設定環境變數
+
+@webpack-cli/init 用於初始化指令 > webpack init
 
 建立 webpack.config.js
 
@@ -101,11 +103,9 @@ cross-env 用於跨平台設定環境變數
         module: {
             rules: [
                 {
-                    enforce: 'pre',
-                    test: /\.jsx?$/,
+                    test: /test\.js$/,
                     exclude: /node_modules/,
-                    loader: 'eslint-loader',
-                    options: eslintrc
+                    use: ['mocha-loader'],
                 },
                 {
                     test: /\.jsx?$/,
@@ -118,9 +118,11 @@ cross-env 用於跨平台設定環境變數
                     },
                 },
                 {
-                    test: /test\.js$/,
+                    enforce: 'pre',
+                    test: /\.jsx?$/,
                     exclude: /node_modules/,
-                    use: ['mocha-loader'],
+                    loader: 'eslint-loader',
+                    options: eslintrc
                 },
                 {
                     test: /\.html$/,
@@ -308,6 +310,9 @@ babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webp
     npm install --save-dev @babel/preset-react
     npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator @babel/plugin-transform-runtime @babel/plugin-proposal-optional-chaining
 
+## 安裝 Typescript
+
+    npm install --save-dev @types/library
 
 ## 安裝 ESLint
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
@@ -358,6 +363,8 @@ IDE畫面右下角可以切換 CRLF (Windows)、LF (Unix)、CR (Mac) 各種換�
 
 eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
 
+※ 執行順序需要放在 babel transpile 之前 ，而loader執行順序是由右往左，因此要擺在 babel-loader 的右邊 ( 也就是後面 )
+
     // webpack.config.js
     
     const eslintrc = require('./.eslintrc');
@@ -365,6 +372,7 @@ eslint-loader 設定，不需要額外指定設定檔，因為會自動去找
         // ...
         module: {
             rules: [
+                // ...
                 {
                     enforce: 'pre',
                     test: /\.jsx?$/,
@@ -1419,3 +1427,71 @@ Use https://github.com/webpack-contrib/terser-webpack-plugin for ES6 (webpack@5 
     export NODE_OPTIONS=--max_old_space_size=4096
     
 設定環境變數使得 node 的記憶體空間更大，預設約1.7G左右
+
+### Window is not defined - when using hotModuleReplacementPlugin
+
+    const dev = {
+        output: {
+            // Workaround https://github.com/webpack-contrib/worker-loader/issues/142
+            globalObject: 'this'
+        },
+        plugins: [
+            // To Avoid 'window is not defined' error, we need add {globalObject: 'this'} to output
+            new webpack.HotModuleReplacementPlugin(),
+        ]
+    };
+    
+### Webpack loader order
+
+    {
+        test: /\.css$/,
+        loaders: ['style'],
+    },
+    {
+        test: /\.css$/,
+        loaders: ['css'],
+    },
+
+等同於
+
+    {
+        test: /\.css$/,
+        loaders: ['style', 'css'],
+    },
+
+其中執行順序為由右到左(雖然建立順序是由左到右)，這其實是 compose 的結構，因此由右到左依序執行
+
+其中 css-loader 是負責將 解析外部引入 @import and url()
+
+而最後由 style-loader 負責將CSS注入到 DOM當中
+
+[What is the loader order for webpack?](https://stackoverflow.com/questions/32234329/what-is-the-loader-order-for-webpack)
+
+[Pitching Loader](https://webpack.js.org/api/loaders/#pitching-loader)
+
+在 Webpack 中 Rule.enforce 有用到 ! -! !! 等3種前置文字，用於 override 所使用的 loader
+
+[Rule.enforce](https://webpack.js.org/configuration/module/#ruleenforce)
+
+而在舊的AMD定義中則是為 require([plugin]![resource])
+
+[What does the “!” character do in nodejs module names?](https://stackoverflow.com/questions/34925439/what-does-the-character-do-in-nodejs-module-names/34930235#34930235)
+
+### Webpack AMD support version 4.28.4
+
+
+### Babel plugin order
+
+Babel 的 plugin 執行順序也是由右而左，而 plugin 比 preset 優先執行
+
+[babel-plugins-run-order](https://stackoverflow.com/questions/34618756/babel-plugins-run-order)
+
+### simple-ts-react-app 參考結構
+
+[simple-ts-react-app](https://github.com/Kornil/simple-ts-react-app)
+
+###  技巧
+
+[愛用 async / await 而非 promise !](https://medium.com/@sj82516/%E6%84%9B%E7%94%A8-async-await-%E8%80%8C%E9%9D%9E-promise-3729d81a16d5)
+[Asynchronous stack traces: why await beats Promise#then()](https://mathiasbynens.be/notes/async-stack-traces)
+[Deploying ES2015+ Code in Production Today](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/)

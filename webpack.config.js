@@ -38,12 +38,11 @@ const common = {
     },
     module: {
         rules: [
+            // https://webpack.js.org/api/loaders/#pitching-loader
             {
-                enforce: 'pre',
-                test: /\.jsx?$/,
+                test: /(spec|test)\.jsx?$/,
                 exclude: /node_modules/,
-                loader: 'eslint-loader',
-                options: eslintrc
+                use: ['mocha-loader'],
             },
             {
                 test: /\.jsx?$/,
@@ -56,9 +55,11 @@ const common = {
                 },
             },
             {
-                test: /(spec|test)\.jsx?$/,
+                enforce: 'pre',
+                test: /\.jsx?$/,
                 exclude: /node_modules/,
-                use: ['mocha-loader'],
+                loader: 'eslint-loader',
+                options: eslintrc
             },
             {
                 test: /\.html$/,
@@ -103,7 +104,12 @@ const prod = {
 };
 
 const dev = {
+    output: {
+        // Workaround https://github.com/webpack-contrib/worker-loader/issues/142
+        globalObject: 'this'
+    },
     plugins: [
+        // To Avoid 'window is not defined' error, we need add {globalObject: 'this'} to output
         new webpack.HotModuleReplacementPlugin(),
     ]
 };
