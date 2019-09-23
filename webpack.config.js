@@ -17,6 +17,8 @@ const eslintrc = require('./.eslintrc');
 
 const isProd = process.env.NODE_ENV === 'production';
 
+require('dotenv').config({path: isProd ? 'prod.env' : 'dev.env'});
+
 const common = {
     mode: isProd ? 'production' : 'development',
     devtool: isProd ? 'cheap-module-source-map' : 'inline-source-map',

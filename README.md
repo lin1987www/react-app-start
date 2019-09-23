@@ -53,13 +53,13 @@ node_modules包含兩種:
 ## 安裝 webpack
 [webpack](https://webpack.js.org/guides/installation/)
 
-    npm install --save-dev webpack webpack-cli @webpack-cli/init cross-env dotenv
+    npm install --save-dev webpack webpack-cli cross-env dotenv
 
-cross-env dotenv @webpack-cli/init 可用於跨平台設定環境變數
+cross-env dotenv 可用於跨平台設定環境變數
 
 @webpack-cli/init 用於初始化指令 > webpack init
 
-建立 webpack.config.js
+建立 webpack.config.js 另外 dev.env 和 prod.env 用於 dotenv 引入環境變數
 
     // webpack.config.js
     const merge = require('webpack-merge').smart;
@@ -80,6 +80,8 @@ cross-env dotenv @webpack-cli/init 可用於跨平台設定環境變數
     const eslintrc = require('./.eslintrc');
     
     const isProd = process.env.NODE_ENV === 'production';
+    
+    require('dotenv').config({path: isProd ? 'prod.env' : 'dev.env'});
     
     const common = {
         mode: isProd ? 'production' : 'development',
