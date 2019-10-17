@@ -187,7 +187,7 @@ cross-env dotenv 可用於跨平台設定環境變數
             }
         },
         entry: {
-            'lib.min': ['@babel/polyfill'],
+            'lib.min': ['core-js', 'regenerator-runtime/runtime'],
             'index': ['./src/web/index.jsx'],
             'test': ['./test/index.js'],
         },
@@ -300,11 +300,11 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
         }
     }
 
-babel-loader, @babel/preset-env 和 @babel/polyfill, core-js@2 用於整合 webpack 使瀏覽器支援 ES, React 語法
+babel-loader, @babel/preset-env 和 core-js@2, regenerator-runtime 用於整合 webpack 使瀏覽器支援 ES, React 語法
 @babel/plugin-proposal-optional-chaining 使得支援  obj?.foo?.bar?.baz;  ?. 語法
 
     npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
-    npm install --save @babel/polyfill core-js@2
+    npm install --save core-js@2 regenerator-runtime
 
 @babel/preset-react 用於編譯 React 的 .jsx 檔案
 其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
@@ -525,7 +525,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
     module.exports = {
         // ...
         entry: {
-            'test': ['@babel/polyfill', './test/index.js'],
+            'test': ['core-js', 'regenerator-runtime/runtime', './test/index.js'],
         },
         module: {
             rules: [
@@ -557,7 +557,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
             '@babel/preset-env',
             {
                 debug: true,
-                useBuiltIns: 'entry',  // import '@babel/polyfill';
+                useBuiltIns: 'entry',
                 corejs: '2',
             }
         ],
@@ -572,7 +572,6 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-export-namespace-from',
         '@babel/plugin-proposal-optional-chaining',
-        '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-regenerator',
         '@babel/plugin-transform-async-to-generator',
     ];
@@ -704,7 +703,7 @@ dynamic-import-node 用於 mocha 執行測試時的 node 環境 import()
     module.exports = {
         // ...
         entry: {
-            'app': ['@babel/polyfill', './src/page/index.jsx'],
+            'app': ['core-js', 'regenerator-runtime/runtime', './src/page/index.jsx'],
         },
         // ...
         plugins: [
@@ -1495,17 +1494,22 @@ Babel 的 plugin 執行順序也是由右而左，而 plugin 比 preset 優先�
 
 ###  技巧
 
-[愛用 async / await 而非 promise !](https://medium.com/@sj82516/%E6%84%9B%E7%94%A8-async-await-%E8%80%8C%E9%9D%9E-promise-3729d81a16d5)
 [Asynchronous stack traces: why await beats Promise#then()](https://mathiasbynens.be/notes/async-stack-traces)
-[Deploying ES2015+ Code in Production Today](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/)
 
+[Deploying ES2015+ Code in Production Today](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/)
 
 ###  @babel/polyfill  vs  @babel/plugin-transform-runtime
 
-@babel/polyfill  使用方式是直接在檔案中引入如
+@babel/polyfill  使用方式是直接在檔案中引入如 
     
     require("@babel/polyfill"); 
+    // or
     import "@babel/polyfill"; 
+
+Babel 7.4.0 之後改用
+
+    import "core-js";
+    import "regenerator-runtime/runtime";
 
 而 @babel/plugin-transform-runtime 是設定在 babelrc 裡面，作為一個外掛，會自動轉換所用到的 語法
 
@@ -1545,3 +1549,13 @@ plugins 跟 Wwbpcak loader 的載入順序一樣 都是由右至左開始執行 
 [@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime)
 [@babel/plugin-transform-regenerator](https://babeljs.io/docs/en/babel-plugin-transform-regenerator)
 [@babel/plugin-transform-async-to-generator](https://babeljs.io/docs/en/next/babel-plugin-transform-async-to-generator.html)
+
+polyfill 是用於補足那些新支援的 function ，但新的語法無法再舊有JavaScript中創造出來，因此就得將新的語法進行 transform
+
+For example, Array.from can be written in ES5 as demonstrated on MDN but there is nothing I can write in ES5 to add arrow function syntax to JavaScript. 
+
+Babel 6 introduced the concept of a preset which is simply shorthand for a set of transforms.
+
+Preset 其實就是一堆支援新語法的轉換
+
+回歸正題，我建議使用  {useBuiltIns: 'usage'} 來取代 '@babel/plugin-transform-runtime'

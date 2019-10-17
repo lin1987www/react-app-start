@@ -129,7 +129,7 @@ const config = merge(base, {
         }
     },
     entry: {
-        'lib.min': ['@babel/polyfill'],
+        'lib.min': ['core-js', 'regenerator-runtime/runtime'],
         'index': ['./src/web/index.jsx'],
         'test': ['./test/index.js'],
         'todo_list': ['./src/web/todo_list.jsx'],
