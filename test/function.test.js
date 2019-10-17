@@ -27,7 +27,7 @@ describe('Mocha Test', function () {
             func.call(555);
         });
         it('Prototype', function () {
-            function FunctionArray() {
+            function FunctionArray () {
                 let instance = this;
                 const prototype = Object.getPrototypeOf(this);
                 const superPrototype = Object.getPrototypeOf(prototype);
@@ -64,7 +64,7 @@ describe('Mocha Test', function () {
             const A = (function () {
                 let foo = 'foo';
 
-                function A() {
+                function A () {
                 }
 
                 A.prototype.getFoo = function () {
@@ -91,7 +91,7 @@ describe('Mocha Test', function () {
                 reject(500);
             });
 
-            function returnValue(value) {
+            function returnValue (value) {
                 return value;
             }
 
@@ -106,7 +106,7 @@ describe('Mocha Test', function () {
         it('Promise execute immediately', function (done) {
             let value = 'foo';
 
-            function getPromise() {
+            function getPromise () {
                 return new Promise(
                     () => {
                         value = 'bar';
@@ -199,7 +199,7 @@ describe('Mocha Test', function () {
                 assert.equal(value, undefined);
             });
         });
-        it('Accessing deeply nested properties',function () {
+        it('Accessing deeply nested properties', function () {
             const obj = {
                 foo: {
                     bar: {
@@ -211,6 +211,34 @@ describe('Mocha Test', function () {
             const safe = obj?.qux?.baz; // undefined
             assert.equal(true, baz === 42);
             assert.equal(true, safe === undefined);
+        });
+        it('setTimeout vs promise', function (done) {
+            setTimeout(() => {
+                console.log('\nsetTimeout1');
+            }, 0);
+
+            Promise.resolve()
+                .then(() => {
+                    console.log('\npromise');
+                });
+
+            (new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                    console.log('\nsetTimeout promise');
+                }, 0);
+            })).then(() => {
+                console.log('\nsetTimeout promise then');
+            });
+
+
+            setTimeout(() => {
+                console.log('\nsetTimeout2');
+            }, -2000);
+
+            setTimeout(() => {
+                done();
+            }, 1000);
         });
     });
 });

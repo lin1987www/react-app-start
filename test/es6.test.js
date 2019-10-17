@@ -1,7 +1,7 @@
 import {assert, expect, should} from 'chai'; // eslint-disable-line no-unused-vars
 
 import foo from './foo';
-import bar, {a as barA, b as barB} from './bar';
+import bar, {a as barA, b as barB, o} from './bar';
 
 describe('ES6', () => {
     describe('Destructuring assignment', () => {
@@ -92,11 +92,20 @@ describe('ES6', () => {
             func(outsideConfig);
         });
         it('Object.assign bind', () => {
-
             const o1 = {a: 1};
             const o2 = {b: 2};
             const o3 = Object.assign(o1, o2);
             assert.equal(o1, o3);
+        });
+        it('Import value is read-only like const', () => {
+            function cannotRedefined() {
+                o = 'NewValue';
+            }
+            expect(cannotRedefined).to.throw();
+            // But you can write property to o
+            expect(o.data).to.deep.equal('foo');
+            Object.assign(o,{data:'data'});
+            expect(o.data).to.deep.equal('data');
         });
     });
 });

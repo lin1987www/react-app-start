@@ -4,7 +4,7 @@ let presets = [
         '@babel/preset-env',
         {
             debug: true,
-            useBuiltIns: 'entry', // 使用 babel 的 polyfill
+            useBuiltIns: 'entry',  // import '@babel/polyfill';
             corejs: '2',
         }
     ],
@@ -18,10 +18,10 @@ let plugins = [
     '@babel/plugin-proposal-json-strings',
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-export-namespace-from',
-    '@babel/plugin-transform-async-to-generator',
-    '@babel/plugin-transform-runtime',
-    '@babel/plugin-transform-arrow-functions',
     '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-transform-runtime',
+    '@babel/plugin-transform-regenerator',
+    '@babel/plugin-transform-async-to-generator',
     ['react-intl-auto', {
         'removePrefix': 'app/'
     }],

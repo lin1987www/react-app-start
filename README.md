@@ -557,7 +557,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
             '@babel/preset-env',
             {
                 debug: true,
-                useBuiltIns: 'usage', // 使用 babel 的 polyfill
+                useBuiltIns: 'entry',  // import '@babel/polyfill';
                 corejs: '2',
             }
         ],
@@ -567,13 +567,14 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
     let plugins = [
         '@babel/plugin-syntax-dynamic-import',
         '@babel/plugin-proposal-object-rest-spread',
-        '@babel/plugin-syntax-import-meta',
         '@babel/plugin-proposal-class-properties',
         '@babel/plugin-proposal-json-strings',
         '@babel/plugin-proposal-export-default-from',
         '@babel/plugin-proposal-export-namespace-from',
-        '@babel/plugin-transform-async-to-generator',
         '@babel/plugin-proposal-optional-chaining',
+        '@babel/plugin-transform-runtime',
+        '@babel/plugin-transform-regenerator',
+        '@babel/plugin-transform-async-to-generator',
     ];
 
     module.exports = {presets, plugins};
@@ -1497,3 +1498,50 @@ Babel 的 plugin 執行順序也是由右而左，而 plugin 比 preset 優先�
 [愛用 async / await 而非 promise !](https://medium.com/@sj82516/%E6%84%9B%E7%94%A8-async-await-%E8%80%8C%E9%9D%9E-promise-3729d81a16d5)
 [Asynchronous stack traces: why await beats Promise#then()](https://mathiasbynens.be/notes/async-stack-traces)
 [Deploying ES2015+ Code in Production Today](https://philipwalton.com/articles/deploying-es2015-code-in-production-today/)
+
+
+###  @babel/polyfill  vs  @babel/plugin-transform-runtime
+
+@babel/polyfill  使用方式是直接在檔案中引入如
+    
+    require("@babel/polyfill"); 
+    import "@babel/polyfill"; 
+
+而 @babel/plugin-transform-runtime 是設定在 babelrc 裡面，作為一個外掛，會自動轉換所用到的 語法
+
+另外經常遇到的 'regeneratorRuntime is not defined' 其實 async 經過一系列的轉換而來的
+
+    let plugins = [
+        ...
+        '@babel/plugin-transform-runtime',
+        '@babel/plugin-transform-regenerator',
+        '@babel/plugin-transform-async-to-generator',
+        ...
+    ];
+    
+plugins 跟 Wwbpcak loader 的載入順序一樣 都是由右至左開始執行 ( compose 的緣故 )
+
+因此 babel 會先執行 '@babel/plugin-transform-async-to-generator' 將 async function 轉成 generator function 的形式
+
+    async function foo() {
+      await bar();
+    }
+    
+    _foo = _asyncToGenerator(function* () {
+        yield bar();
+    });
+    
+之後再透過 @babel/plugin-transform-regenerato 轉成  regeneratorRuntime 的形式 ( facebook/regeneratorRuntime )
+
+    regeneratorRuntime.mark(function _callee() {...})
+    
+因此出現引用全物變數的 regeneratorRuntime 
+
+但因為 regeneratorRuntime 沒有被定義所以會出現錯誤
+    
+而這三個 plugin 其實已經包含在 env 裡面了，因此可以忽略
+
+[Example](https://babeljs.io/repl/build/master#?babili=false&browsers=&build=&builtIns=entry&spec=false&loose=false&code_lz=IYZwngdgxgBAZgV2gFwJYHsL3egFAShgG8AoGGYAd2FWRgCNgAnAgbhIF8g&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=false&presets=env&prettier=false&targets=&version=7.6.4&externalPlugins=%40babel%2Fplugin-transform-async-to-generator%407.5.0%2C%40babel%2Fplugin-transform-regenerator%407.4.5%2C%40babel%2Fplugin-transform-runtime%407.6.2)
+[@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime)
+[@babel/plugin-transform-regenerator](https://babeljs.io/docs/en/babel-plugin-transform-regenerator)
+[@babel/plugin-transform-async-to-generator](https://babeljs.io/docs/en/next/babel-plugin-transform-async-to-generator.html)
