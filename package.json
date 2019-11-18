@@ -73,6 +73,7 @@
     "eslint-plugin-import": "^2.18.0",
     "eslint-plugin-react": "^7.14.2",
     "eslint-plugin-react-hooks": "^1.6.1",
+    "esm": "^3.2.25",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",

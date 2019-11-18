@@ -474,7 +474,7 @@ babel-eslint 用於去除一些 react 語法解析上的問題
 [chai](https://www.chaijs.com/)
 [mocha](https://mochajs.org/)
 
-    npm install --save-dev chai mocha mocha-loader @babel/register
+    npm install --save-dev chai mocha mocha-loader @babel/register esm
 
 @babel/register 搭配 mocha 所使用，讓即使在開發環境底下IDE也能執行 babel 後的語法
 
@@ -586,6 +586,9 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     Mocha Extra options: --timeout 5000
 
+另外為了支援 ES Module 可以再加上額外選項 --require esm (但是跟 enzyme 不相容)
+
+    Mocha Extra options: --require esm
 
 ## Dynamic Import
 

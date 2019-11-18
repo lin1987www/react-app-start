@@ -83,7 +83,7 @@ describe('ES6', () => {
             const defaultConfig = {a: 0, b: 0, c: 0};
             const outsideConfig = {a: 1};
 
-            function func(config) {
+            function func (config) {
                 const mergeConfig = Object.assign({}, defaultConfig, config);
                 Object.assign(config, mergeConfig);
                 assert.equal(outsideConfig, config);
@@ -98,14 +98,35 @@ describe('ES6', () => {
             assert.equal(o1, o3);
         });
         it('Import value is read-only like const', () => {
-            function cannotRedefined() {
+            function cannotRedefined () {
                 o = 'NewValue';
             }
+
             expect(cannotRedefined).to.throw();
             // But you can write property to o
             expect(o.data).to.deep.equal('foo');
-            Object.assign(o,{data:'data'});
+            Object.assign(o, {data: 'data'});
             expect(o.data).to.deep.equal('data');
+        });
+        it('Proxy', () => {
+            // TODO
+            const monster1 = {
+                secret: 'easily scared',
+                eyeCount: 4
+            };
+
+            const handler1 = {
+                get: function(target, prop, receiver) {
+                    console.log(receiver === p3);
+                }
+            };
+
+            const proxy1 = new Proxy(monster1, handler1);
+            const p2 = Object.create(proxy1);
+            const p3 = Object.create(p2);
+            p3.eyeCount;
+
+
         });
     });
 });
