@@ -590,6 +590,10 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     Mocha Extra options: --require esm
 
+[ECMA Script Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
+
+[CommonJS Module](https://zh.wikipedia.org/wiki/CommonJS)
+
 ## Dynamic Import
 
 Webpack 限定版本為 4.28.x  4.29.6 不能正常解析 Dynamic Import
