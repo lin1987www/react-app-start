@@ -23,6 +23,13 @@ let plugins = [
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-export-namespace-from',
     '@babel/plugin-proposal-optional-chaining',
+    [
+        '@babel/plugin-transform-runtime',
+        {
+            'helpers': false,
+            'regenerator': true,
+        }
+    ],
     '@babel/plugin-transform-regenerator',
     '@babel/plugin-transform-async-to-generator',
     ['react-intl-auto', {

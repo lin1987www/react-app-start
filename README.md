@@ -187,7 +187,7 @@ cross-env dotenv 可用於跨平台設定環境變數
             }
         },
         entry: {
-            'lib.min': ['core-js', 'regenerator-runtime/runtime'],
+            'lib.min': ['react', 'react-dom'],
             'index': ['./src/web/index.jsx'],
             'test': ['./test/index.js'],
         },
@@ -277,7 +277,7 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
                                 {
                                     debug: true,
                                     useBuiltIns: 'usage', // 使用 babel 的 polyfill
-                                    corejs: '2',
+                                    corejs: '3',
                                 }
                             ],
                             '@babel/preset-react'
@@ -285,14 +285,20 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
                         plugins: [
                             '@babel/plugin-syntax-dynamic-import',
                             '@babel/plugin-proposal-object-rest-spread',
-                            '@babel/plugin-syntax-import-meta',
                             '@babel/plugin-proposal-class-properties',
                             '@babel/plugin-proposal-json-strings',
                             '@babel/plugin-proposal-export-default-from',
                             '@babel/plugin-proposal-export-namespace-from',
-                            '@babel/plugin-transform-async-to-generator',
-                            '@babel/plugin-transform-runtime',
                             '@babel/plugin-proposal-optional-chaining',
+                            [
+                                '@babel/plugin-transform-runtime',
+                                {
+                                    'helpers': false,
+                                    'regenerator': true,
+                                }
+                            ],
+                            '@babel/plugin-transform-regenerator',
+                            '@babel/plugin-transform-async-to-generator',
                         ],
                     },
                 },
@@ -300,17 +306,16 @@ babel-loader 設定，如果沒有設定的話也會自動去尋找設定檔
         }
     }
 
-babel-loader, @babel/preset-env 和 core-js@2, regenerator-runtime 用於整合 webpack 使瀏覽器支援 ES, React 語法
+babel-loader, @babel/preset-env 和 core-js@3 用於整合 webpack 使瀏覽器支援 ES, React 語法
 @babel/plugin-proposal-optional-chaining 使得支援  obj?.foo?.bar?.baz;  ?. 語法
 
-    npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader
-    npm install --save core-js@2 regenerator-runtime
+    npm install --save-dev @babel/core @babel/cli @babel/preset-env babel-loader core-js@3
 
 @babel/preset-react 用於編譯 React 的 .jsx 檔案
 其他 plugins 是對其 ES 語法進行擴充與支援，而這些套件通常只用於開發階段，因此必須安裝於 devDependencies
 
     npm install --save-dev @babel/preset-react
-    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-syntax-import-meta @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-transform-async-to-generator @babel/plugin-transform-runtime @babel/plugin-proposal-optional-chaining
+    npm install --save-dev @babel/plugin-syntax-dynamic-import @babel/plugin-proposal-object-rest-spread @babel/plugin-proposal-class-properties @babel/plugin-proposal-json-strings @babel/plugin-proposal-export-default-from @babel/plugin-proposal-export-namespace-from @babel/plugin-proposal-optional-chaining @babel/plugin-transform-runtime @babel/plugin-transform-regenerator @babel/plugin-transform-async-to-generator @babel/runtime
 
 ## 安裝 Typescript
 
@@ -525,7 +530,7 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
     module.exports = {
         // ...
         entry: {
-            'test': ['core-js', 'regenerator-runtime/runtime', './test/index.js'],
+            'test': ['./test/index.js'],
         },
         module: {
             rules: [
@@ -589,6 +594,8 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 另外為了支援 ES Module 可以再加上額外選項 --require esm 作為 node.exe 的參數!! (不是 Mocha 的額外參數 設定上有差別!!)
 
     Node Extra options: --require esm
+
+雖然 Babel 也可以將 ES Module 進行轉換，但是唯獨 node_modules 裡檔案中的 ES Module 不會進行轉換 (@babel/core@7.5.5)
 
 不使用 esm 時，必須手動將 /node_module/.cache/  這資料夾刪除 避免不必要的錯誤
 
@@ -722,7 +729,7 @@ dynamic-import-node 用於 mocha 執行測試時的 node 環境 import()
     module.exports = {
         // ...
         entry: {
-            'app': ['core-js', 'regenerator-runtime/runtime', './src/page/index.jsx'],
+            'app': ['./src/page/index.jsx'],
         },
         // ...
         plugins: [
@@ -1536,37 +1543,57 @@ Babel 7.4.0 之後改用
 
     let plugins = [
         ...
+        [
+            "@babel/plugin-transform-runtime",
+            {
+                "helpers": false,
+                "regenerator": true,
+            }
+        ],
         '@babel/plugin-transform-runtime',
         '@babel/plugin-transform-regenerator',
-        '@babel/plugin-transform-async-to-generator',
         ...
     ];
     
 plugins 跟 Webpcak loader 的載入順序一樣 都是由右至左開始執行 ( compose 的緣故 )
 
-因此 babel 會先執行 '@babel/plugin-transform-async-to-generator' 將 async function 轉成 generator function 的形式
+轉換範例
 
     async function foo() {
       await bar();
     }
     
+因此 babel 會先執行 '@babel/plugin-transform-async-to-generator' 將 async function 轉成 generator function 的形式
+
     _foo = _asyncToGenerator(function* () {
         yield bar();
     });
     
-之後再透過 @babel/plugin-transform-regenerato 轉成  regeneratorRuntime 的形式 ( facebook/regeneratorRuntime )
+之後再透過 @babel/plugin-transform-regenerato 轉成  regeneratorRuntime 的形式 ( facebook/regeneratorRuntime ) 因此出現引用全物變數的 regeneratorRuntime 
 
-    regeneratorRuntime.mark(function _callee() {...})
+    regeneratorRuntime.mark(function _callee() {...})  // 本來的 function* () 變成了 function _callee()
     
-因此出現引用全物變數的 regeneratorRuntime 
+因為 regeneratorRuntime 沒有被定義所以會出現錯誤，因此透過 @babel/plugin-transform-runtime 轉換成由 @babel/runtime/ 提供( 但可以透過其option設定改成 corejs 來提供 )，轉變成 _regenerator
 
-但因為 regeneratorRuntime 沒有被定義所以會出現錯誤
-    
-而這三個 plugin 其實已經包含在 env 裡面了，因此可以忽略
+    _regenerator.default.mark(function _callee() {...})
 
-[Example](https://babeljs.io/repl/build/master#?babili=false&browsers=&build=&builtIns=entry&spec=false&loose=false&code_lz=IYZwngdgxgBAZgV2gFwJYHsL3egFAShgG8AoGGYAd2FWRgCNgAnAgbhIF8g&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=false&presets=env&prettier=false&targets=&version=7.6.4&externalPlugins=%40babel%2Fplugin-transform-async-to-generator%407.5.0%2C%40babel%2Fplugin-transform-regenerator%407.4.5%2C%40babel%2Fplugin-transform-runtime%407.6.2)
+但後來可以透過直接在 @babel/preset-env 的額外設定中，由 corejs 進行 polyfill
+
+    [
+        '@babel/preset-env',
+        {
+            debug: true,
+            useBuiltIns: 'entry',
+            corejs: 3
+        }
+    ],
+
+[Example](https://babeljs.io/repl#?babili=false&browsers=Edge%20%3E%3D%2015&build=&builtIns=usage&spec=false&loose=false&code_lz=IYZwngdgxgBAZgV2gFwJYHsL3egFAShgG8AoGGYAd2FWRgCNgAnAgbhIF8Sg&debug=false&forceAllTransforms=false&shippedProposals=false&circleciRepo=&evaluate=false&fileSize=false&timeTravel=false&sourceType=module&lineWrap=false&presets=env&prettier=false&targets=&version=7.7.3&externalPlugins=%40babel%2Fplugin-transform-async-to-generator%407.7.0%2C%40babel%2Fplugin-transform-regenerator%407.7.0%2C%40babel%2Fplugin-transform-runtime%407.6.2)
+
 [@babel/plugin-transform-runtime](https://babeljs.io/docs/en/babel-plugin-transform-runtime)
+
 [@babel/plugin-transform-regenerator](https://babeljs.io/docs/en/babel-plugin-transform-regenerator)
+
 [@babel/plugin-transform-async-to-generator](https://babeljs.io/docs/en/next/babel-plugin-transform-async-to-generator.html)
 
 polyfill 是用於補足那些新支援的 function ，但新的語法無法再舊有JavaScript中創造出來，因此就得將新的語法進行 transform
@@ -1577,4 +1604,4 @@ Babel 6 introduced the concept of a preset which is simply shorthand for a set o
 
 Preset 其實就是一堆支援新語法的轉換
 
-回歸正題，我建議使用  {useBuiltIns: 'usage'} 來取代 '@babel/plugin-transform-runtime'
+使用 '@babel/plugin-transform-runtime' 來取代 'regenerator-runtime/runtime' webpack設定上可以更簡潔
