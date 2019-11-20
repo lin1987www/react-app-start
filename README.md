@@ -586,13 +586,25 @@ test/.eslintrc.js 額外的設定，可以使得 ESLint 知道test資料夾底�
 
     Mocha Extra options: --timeout 5000
 
-另外為了支援 ES Module 可以再加上額外選項 --require esm (但是跟 enzyme 不相容)
+另外為了支援 ES Module 可以再加上額外選項 --require esm 作為 node.exe 的參數!! (不是 Mocha 的額外參數 設定上有差別!!)
 
-    Mocha Extra options: --require esm
+    Node Extra options: --require esm
+
+不使用 esm 時，必須手動將 /node_module/.cache/  這資料夾刪除 避免不必要的錯誤
 
 [ECMA Script Module](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import)
 
+    import * from './foo';
+    export default 'bar';
+    import('./foo').then(()=>{});
+
 [CommonJS Module](https://zh.wikipedia.org/wiki/CommonJS)
+
+    const foo = require('./foo');
+    module.export = 'bar';
+    export = {foo:'foo', bar: 'bar'};
+
+目前 ES Module 是用於瀏覽器的環境上(若Node.js環境下要支援必須額外處理)，而CommonJS Module是普遍用於 Node.js 環境上
 
 ## Dynamic Import
 
@@ -1530,7 +1542,7 @@ Babel 7.4.0 之後改用
         ...
     ];
     
-plugins 跟 Wwbpcak loader 的載入順序一樣 都是由右至左開始執行 ( compose 的緣故 )
+plugins 跟 Webpcak loader 的載入順序一樣 都是由右至左開始執行 ( compose 的緣故 )
 
 因此 babel 會先執行 '@babel/plugin-transform-async-to-generator' 將 async function 轉成 generator function 的形式
 
