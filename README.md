@@ -325,7 +325,7 @@ babel-loader, @babel/preset-env 和 core-js@3 用於整合 webpack 使瀏覽器�
 [ESLint](https://eslint.org/docs/user-guide/getting-started)
 
     // --save-dev 跟 -D 都是一樣的option  會修改到 package.json 檔案中
-    npm install --save-dev eslint eslint-loader eslint-plugin-react babel-eslint eslint-plugin-import
+    npm install --save-dev eslint@5 eslint-loader eslint-plugin-react babel-eslint eslint-plugin-import
         
 /node_modules/.bin包含了所有可以執行的package指令        
         
@@ -767,8 +767,7 @@ Then add it to your ESLint configuration:
 
 WebStorm 可以啟動 PostCss plugin 外掛
 
-    npm install --save postcss-import
-    npm install --save-dev style-loader css-loader postcss-loader postcss-cli postcss-safe-parser stylelint stylelint-webpack-plugin stylelint-config-recommended autoprefixer precss
+    npm install --save-dev style-loader css-loader postcss-loader postcss-cli postcss-safe-parser stylelint stylelint-webpack-plugin stylelint-config-recommended postcss-import precss autoprefixer
 
 postcss-import To resolve path of an @import rule
 

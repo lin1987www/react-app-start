@@ -9,7 +9,7 @@ let presets = [
             debug: true,
             // When run a test, using {useBuiltIns: 'usage'} to instead of '@babel/plugin-transform-runtime'
             useBuiltIns: isMochaRunning ? 'usage' : 'entry',
-            corejs: '2',
+            corejs: '3',
         }
     ],
     '@babel/preset-react'
@@ -41,7 +41,10 @@ let plugins = [
 ];
 
 if (isMochaRunning) {
-    plugins.push('dynamic-import-node');
+    // NOTE: Once we drop support for Babel <= v6 we should
+    // update this to import from @babel/plugin-syntax-dynamic-import.
+    // this plugin is already moved to @babel/plugin-syntax-dynamic-import.
+    // plugins.push('dynamic-import-node');
 }
 
 module.exports = {presets, plugins};
