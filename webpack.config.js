@@ -130,7 +130,7 @@ const config = merge(base, {
     },
     entry: {
         'lib.min': ['react', 'react-dom'],
-        'index': ['./src/views/index.jsx'],
+        'index': ['./src/views/index/index.jsx'],
         'test': ['./test/index.js'],
         'todo_list': ['./src/views/todo_list.jsx'],
         'hi_i18n': ['./src/views/hi_i18n.jsx'],
@@ -144,7 +144,7 @@ const config = merge(base, {
         new HtmlWebpackPlugin({
             inject: 'body',
             chunks: ['lib.min', 'index'],
-            template: './src/views/index.html',
+            template: './src/views/index/index.html',
             filename: 'index.html',
         }),
         new HtmlWebpackPlugin({
