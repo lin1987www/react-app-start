@@ -14,10 +14,16 @@ const babel_presets = babelrc.presets;
 const babel_plugins = babelrc.plugins;
 
 const eslintrc = require('./.eslintrc');
+// const tsEslintrc = require('./ts.eslintrc');
 
 const isProd = process.env.NODE_ENV === 'production';
 
 require('dotenv').config({path: isProd ? 'prod.env' : 'dev.env'});
+
+// `CheckerPlugin` is optional. Use it if you want async error reporting.
+// We need this plugin to detect a `--watch` mode. It may be removed later
+// after https://github.com/webpack/webpack/issues/3460 will be resolved.
+const { CheckerPlugin } = require('awesome-typescript-loader');
 
 const common = {
     mode: isProd ? 'production' : 'development',
@@ -27,7 +33,8 @@ const common = {
         hot: true
     },
     resolve: {
-        symlinks: false
+        symlinks: false,
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
     },
     output: {
         libraryTarget: 'umd',
@@ -42,19 +49,23 @@ const common = {
         rules: [
             // https://webpack.js.org/api/loaders/#pitching-loader
             {
-                test: /(spec|test)\.jsx?$/,
+                test: /(spec|test)\.(jsx?|tsx?)$/,
                 exclude: /node_modules/,
                 use: ['mocha-loader'],
             },
             {
-                test: /\.jsx?$/,
+                test: /\.(jsx?|tsx?)$/,
                 include: [path.resolve(__dirname, 'src'), path.resolve(__dirname, 'test')],
-                loader: 'babel-loader',
-                options: {
-                    // To avoid node_modules building failed at jsx
-                    presets: babel_presets,
-                    plugins: babel_plugins,
-                },
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            // To avoid node_modules building failed at jsx
+                            presets: babel_presets,
+                            plugins: babel_plugins,
+                        }
+                    },
+                ]
             },
             {
                 enforce: 'pre',
@@ -64,6 +75,20 @@ const common = {
                 options: eslintrc
             },
             {
+                // Please don't try to move awesome-typescript-loader with babel-loader.
+                test: /\.tsx?$/,
+                loader: 'awesome-typescript-loader',
+            },
+            // {
+            //
+            //     enforce: 'pre',
+            //     test: /\.(tsx?)$/,
+            //     exclude: /node_modules/,
+            //     loader: 'eslint-loader',
+            //     // eslint for typescript didn't work. Please use "npm run test:tslint" instead.
+            //     options: tsEslintrc
+            // },
+            {
                 test: /\.html$/,
                 loader: 'html-loader',
                 options: {
@@ -71,7 +96,7 @@ const common = {
                 }
             },
             {
-                test: /\.css$/,
+                test: /\.[ps]?css$/,
                 use: [
                     {
                         loader: 'style-loader',
@@ -95,6 +120,7 @@ const common = {
     plugins: [
         new StyleLintPlugin(),
         new ManifestPlugin(),
+        new CheckerPlugin(),
     ],
 };
 
@@ -138,6 +164,7 @@ const config = merge(base, {
         'ref': ['./src/views/ref.jsx'],
         'hook': ['./src/views/hook.jsx'],
         'hook_in_class': ['./src/views/hook_in_class.jsx'],
+        'type-script': ['./src/views/type-script/type-script'],
     },
     plugins: [
         new CleanWebpackPlugin(['dist']),
@@ -188,6 +215,12 @@ const config = merge(base, {
             title: 'Hook in class',
             chunks: ['lib.min', 'hook_in_class'],
             filename: 'hook_in_class.html',
+        }),
+        new HtmlWebpackPlugin({
+            inject: 'body',
+            title: 'Type Script',
+            chunks: ['lib.min', 'type-script'],
+            filename: 'type-script.html',
         }),
     ],
 });

@@ -13,6 +13,9 @@ module.exports = {
         'plugin:import/errors',
         'plugin:import/warnings',
     ],
+    'plugins': [
+        'react-hooks',
+    ],
     'parserOptions': {
         'ecmaFeatures': {
             'jsx': true
@@ -30,9 +33,6 @@ module.exports = {
             'forbidExtraProps',
         ]
     },
-    'plugins': [
-        'react-hooks'
-    ],
     'rules': {
         'react-hooks/rules-of-hooks': 'error',
         'react-hooks/exhaustive-deps': 'warn',
