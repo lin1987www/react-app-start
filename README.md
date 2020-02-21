@@ -470,9 +470,140 @@ babel-eslint 用於去除一些 react 語法解析上的問題
     }
 
 注意如果有設定檔，則規則不會被自動被子目錄的規則複寫，因此不建議指定設定檔 
-    
+
      "test:lint": "eslint . --ext .js,.jsx --config .eslintrc.js",
      
+## Webpack TypeScript React
+
+    npm install --save-dev typescript awesome-typescript-loader @types/react @types/react-dom @typescript-eslint/parser @typescript-eslint/eslint-plugin @babel/preset-typescript
+
+其中 @types 是讓 TypeScript 能夠解析 module 的 Type 使得能在 TypeScript 中使用其 module 如 @types/react @types/react-dom 
+
+設定webpack.config.js 新增 TypeScript loader 並且修改 babel-loader 可讀入 TypeScript 的檔案
+
+    // webpack.config.js
+    module.exports = {
+        // ...
+
+        module: {
+            rules: [
+                { 
+                    test: /\.(jsx?|tsx?)$/,
+                    loader: 'babel-loader'
+                    // ...
+                },
+                // ...
+                {
+                    // Please don't try to move awesome-typescript-loader with babel-loader.
+                    test: /\.tsx?$/,
+                    loader: 'awesome-typescript-loader',
+                },
+            ]
+        }
+    }
+
+.babelrc.js 中 新增 @babel/preset-typescript 到 presets 使得 Babel 能夠載入 typescript的語法到 AST 當中
+    
+    // .babelrc.js
+    let presets = [
+        //...
+        '@babel/preset-typescript'
+    ];
+
+新增 awesome-typescript-loader 會讀入的 tsconfig.json 設定
+    
+    // tsconfig.json
+    {
+      "compileOnSave": false,
+      "compilerOptions": {
+        /*
+          Fix  awesome-typescript-loader
+          https://github.com/s-panferov/awesome-typescript-loader/blob/master/tsconfig.json
+    
+          ERROR in [at-loader] ./node_modules/@types/react/index.d.ts:34:22
+              TS2307: Cannot find module 'csstype'.
+    
+          ERROR in [at-loader] ./node_modules/@types/babel__generator/index.d.ts:11:20
+              TS2307: Cannot find module '@babel/types'.
+    
+          "moduleResolution": "node",
+        */
+        "moduleResolution": "node",
+        /*
+          https://www.typescriptlang.org/docs/handbook/tsconfig-json.html
+    
+          "jsx": "preserve"
+          https://www.typescriptlang.org/v2/en/tsconfig#jsx
+    
+          Leave jsx elements for babel-loader, so we chose 'preserve'.
+        */
+        "jsx": "preserve",
+        "outFile": "./dist/",
+        "allowJs": false,
+        "module": "es6",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": true
+      }
+    }
+
+新增 TypeScript ESLint 設定檔 ts.eslintrc.js
+
+    // ts.eslintrc.js
+    const eslintrc = require('./.eslintrc');
+    const merge = require('webpack-merge').smart;
+    
+    let tsEslintrc = {
+        root: true,
+        parser: '@typescript-eslint/parser',
+        plugins: [
+            '@typescript-eslint',
+        ],
+        extends: [
+            'plugin:react/recommended',
+            'plugin:@typescript-eslint/eslint-recommended',
+            'plugin:@typescript-eslint/recommended',
+            'plugin:@typescript-eslint/recommended-requiring-type-checking',
+        ],
+        parserOptions: {
+            project: 'tsconfig.json',
+            tsconfigRootDir: __dirname
+        },
+        rules: {
+            // disable the rule for all files
+            // "@typescript-eslint/explicit-function-return-type": "off"
+        },
+        overrides: [
+            {
+                // enable the rule specifically for TypeScript files
+                files: ['**/*.ts', '**/*.tsx'],
+                rules: {
+                    '@typescript-eslint/explicit-function-return-type': ['off'],
+                    '@typescript-eslint/no-var-requires':['off']
+                }
+            }
+        ]
+    };
+    
+    tsEslintrc = merge( eslintrc, tsEslintrc);
+    
+    module.exports = tsEslintrc;
+
+在 package.json 中設定可執行指令
+
+    // package.json
+    {
+        //...
+        "scripts": {
+            "test:tslint": "eslint . --ext .ts,.tsx --config ./ts.eslintrc.js",
+        },
+    }
+    
+等同於
+
+    npx eslint . --ext .ts,.tsx --config ./ts.eslintrc.js
+
 
 ## 安裝 mocha 自動測試 跟 chai 測試語法
 
@@ -625,7 +756,7 @@ Webpack 限定版本為 4.28.x  4.29.6 不能正常解析 Dynamic Import
         ...
     ];
 
-    const _MOCHA_PATH = new RegExp('(\\\\|/)node_modules\\1mocha\\1bin\\1_mocha$');
+    const _MOCHA_PATH = new RegExp('([\\\\/])node_modules\\1mocha\\1bin\\1_mocha$');
     const isMochaRunning = process.argv.findIndex(arg => _MOCHA_PATH.test(arg)) > -1;
     if (isMochaRunning) {
         plugins.push('dynamic-import-node');
